@@ -6,10 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="PG6100Enterprise2" />
+        <module name="chat" />
+        <module name="highscore" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="chat" target="1.5" />
+      <module name="highscore" target="1.5" />
       <module name="PG6100Enterprise2" target="1.5" />
     </bytecodeTargetLevel>
   </component>

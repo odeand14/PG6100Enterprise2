@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PG6100Enterprise2.iml" filepath="$PROJECT_DIR$/PG6100Enterprise2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chat/chat.iml" filepath="$PROJECT_DIR$/chat/chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/highscore/highscore.iml" filepath="$PROJECT_DIR$/highscore/highscore.iml" />
     </modules>
   </component>
 </project>
