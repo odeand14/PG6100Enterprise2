@@ -11,6 +11,7 @@
     <modules>
         <module>highscore</module>
         <module>chat</module>
+        <module>user</module>
     </modules>
 
 
