@@ -255,7 +255,6 @@
                     </executions>
                 </plugin>
 
-
                 <plugin>
                     <!-- see https://kotlinlang.org/docs/reference/using-maven.html -->
                     <artifactId>kotlin-maven-plugin</artifactId>
