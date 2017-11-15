@@ -12,7 +12,8 @@
         <module>highscore</module>
         <module>chat</module>
         <module>user</module>
-        <module>gateway</module>
+        <module>zuul</module>
+        <module>eureka</module>
     </modules>
 
     <properties>
@@ -223,7 +224,38 @@
         </plugins>
 
         <pluginManagement>
+
+
             <plugins>
+
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <inherited>true</inherited>
+                    <configuration>
+                        <source>${version.java}</source>
+                        <target>${version.java}</target>
+                    </configuration>
+                </plugin>
+
+                <!-- this is needed to run integration tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
                 <plugin>
                     <!-- see https://kotlinlang.org/docs/reference/using-maven.html -->
                     <artifactId>kotlin-maven-plugin</artifactId>
