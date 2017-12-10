@@ -1,4 +1,4 @@
-package db
+package no.westerdals.zuul
 
 import org.hibernate.validator.constraints.NotBlank
 import javax.persistence.ElementCollection

@@ -1,4 +1,5 @@
-import db.UserService
+package no.westerdals.zuul
+
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -15,7 +16,6 @@ import java.security.Principal
 
 @RestController
 class RestApi(
-        //TODO: might not need import for UserService if we add  package to kotlin folder
         private val service: UserService,
         private val authenticationManager: AuthenticationManager,
         private val userDetailsService: UserDetailsService

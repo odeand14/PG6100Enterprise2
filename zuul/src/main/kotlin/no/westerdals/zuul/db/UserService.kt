@@ -1,4 +1,4 @@
-package db
+package no.westerdals.zuul
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.CrudRepository
@@ -25,7 +25,7 @@ class UserService(
                 return false
             }
 
-            val user = UserEntity(username, hash, roles.map{"ROLE_$it"}.toSet())
+            val user = UserEntity(username, hash, roles.map { "ROLE_$it" }.toSet())
 
             userCrud.save(user)
 
