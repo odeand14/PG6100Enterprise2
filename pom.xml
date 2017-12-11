@@ -322,8 +322,8 @@
                             </goals>
                             <configuration>
                                 <sourceDirs>
-                                    <sourceDir>${project.basedir}/src/no.westerdals.zuul.no.westerdals.user.main/kotlin</sourceDir>
-                                    <sourceDir>${project.basedir}/src/no.westerdals.zuul.no.westerdals.user.main/java</sourceDir>
+                                    <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                    <sourceDir>${project.basedir}/src/main  /java</sourceDir>
                                 </sourceDirs>
                             </configuration>
                         </execution>
