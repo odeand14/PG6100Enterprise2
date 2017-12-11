@@ -1,4 +1,4 @@
-package no.westerdals.user
+package no.westerdals.userservice
 
 // Created by Andreas Ødegaard on 10.12.2017.
 import org.springframework.boot.SpringApplication

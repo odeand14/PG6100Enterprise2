@@ -10,6 +10,7 @@
 #      url: http://frontend/
 #
 #
+
 #eureka:
 #  instance:
 #    preferIpAddress: true
@@ -18,21 +19,21 @@
 #      enabled: true
 #    serviceUrl:
 #      defaultZone: http://eureka:8761/eureka/
-#
 
 zuul:
   routes:
     user-service:
-      path: /user-service/**
-      url: http://user-service:8080/
+      path: /userservice-service/**
+      url: http://userservice-service:8080/
       # Cookies are sensitive data. So, by default,
       # Zool removes them when proxying.
       # But here we need the cookies for authentication,
       # so we need to allow them.
       sensitive-headers:
-    greetings:
-      path: /greetings/**
-      url: http://greetings:8080
+
+    highscore:
+      path: /highscore/**
+      url: http://highscore:8080
       sensitive-headers:
 
 spring:

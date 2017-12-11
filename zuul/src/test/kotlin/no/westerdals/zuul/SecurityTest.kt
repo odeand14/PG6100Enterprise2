@@ -80,14 +80,14 @@ class SecurityTest{
     @Test
     fun testUnauthorizedAccess(){
 
-        given().get("/user")
+        given().get("/userservice")
                 .then()
                 .statusCode(401)
     }
 
 
     /**
-     *   Utility function used to create a new user in the database
+     *   Utility function used to create a new userservice in the database
      */
     private fun registerUser(id: String, password: String) : Pair<String,String>{
 
@@ -124,7 +124,7 @@ class SecurityTest{
                 .extract().cookie("SESSION")
 
         /*
-            From now on, the user is authenticated.
+            From now on, the userservice is authenticated.
             I do not need to use userid/password in the following requests.
             But each further request will need to have both the SESSION
             cookie and the XSRF token
@@ -142,7 +142,7 @@ class SecurityTest{
         val cookies = registerUser(name, pwd)
         val session = cookies.first
 
-        given().get("/user")
+        given().get("/userservice")
                 .then()
                 .statusCode(401)
 
@@ -151,7 +151,7 @@ class SecurityTest{
             setting the CSRF token
          */
         given().cookie("SESSION", session)
-                .get("/user")
+                .get("/userservice")
                 .then()
                 .statusCode(200)
                 .body("name", equalTo(name))
@@ -163,7 +163,7 @@ class SecurityTest{
             the SESSION token.
          */
         given().auth().basic(name, pwd)
-                .get("/user")
+                .get("/userservice")
                 .then()
                 .statusCode(200)
                 .cookie("SESSION") // new SESSION cookie

@@ -21,7 +21,7 @@ class RestApi(
         private val userDetailsService: UserDetailsService
 ) {
 
-    @RequestMapping("/user")
+    @RequestMapping("/userservice")
     fun user(user: Principal): ResponseEntity<Map<String, Any>> {
         val map = mutableMapOf<String,Any>()
         map.put("name", user.name)

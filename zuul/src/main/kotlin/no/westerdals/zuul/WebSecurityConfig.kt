@@ -33,10 +33,10 @@ class WebSecurityConfig(
                 .and()
                 //
                 .authorizeRequests()
-                .antMatchers("/user").authenticated()
+                .antMatchers("/userservice").authenticated()
                 .antMatchers("/signIn").permitAll()
-                .antMatchers("/user-service/usersInfoCount").permitAll()
-                .antMatchers("/user-service/**").authenticated()
+                .antMatchers("/userservice-service/usersInfoCount").permitAll()
+                .antMatchers("/userservice-service/**").authenticated()
                 .antMatchers("/greetings/**").authenticated()
                 .anyRequest().denyAll()
                 .and()

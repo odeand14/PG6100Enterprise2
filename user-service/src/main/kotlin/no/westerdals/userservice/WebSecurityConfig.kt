@@ -1,4 +1,4 @@
-package no.westerdals.user
+package no.westerdals.userservice
 
 // Created by Andreas Ødegaard on 10.12.2017.
 
@@ -48,8 +48,8 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
 }
 
 /**
- * Custom check. Not only we need a user authenticated, but we also
- * need to make sure that a user can only access his/her data, and not the
+ * Custom check. Not only we need a userservice authenticated, but we also
+ * need to make sure that a userservice can only access his/her data, and not the
  * one of the other users
  */
 class UserSecurity{

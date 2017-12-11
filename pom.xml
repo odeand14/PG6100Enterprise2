@@ -12,7 +12,7 @@
     <modules>
         <module>highscore</module>
         <module>chat</module>
-        <module>user</module>
+        <module>user-service</module>
         <module>zuul</module>
         <module>eureka</module>
         <module>frontend</module>

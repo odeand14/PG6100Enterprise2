@@ -16,7 +16,7 @@ services:
 
   user:
     build:
-      context: ./user
+      context: ./user-service
       dockerfile: Dockerfile
     depends_on:
       - redis
