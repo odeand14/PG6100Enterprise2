@@ -2,7 +2,6 @@ package no.westerdals.user
 
 // Created by Andreas Ødegaard on 10.12.2017.
 
-import no.westerdals.user.WebSecurityConfig
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder

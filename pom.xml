@@ -92,23 +92,6 @@
                 <version>3.2.1</version>
             </dependency>
 
-
-            <dependency>
-                <groupId>org.tsdes.spring.xmlandjson</groupId>
-                <artifactId>xmlandjson</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.tsdes.spring.examples</groupId>
-                <artifactId>news</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.tsdes.spring.utils</groupId>
-                <artifactId>utils</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
             <!--
                 The Java API comes with the JDK itself.
                 On the other hand, the Kotlin API is treated like any other
