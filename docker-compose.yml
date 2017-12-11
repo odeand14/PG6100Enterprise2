@@ -26,6 +26,17 @@ services:
       context: ./eureka
       dockerfile: Dockerfile
 
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+
+  highscore:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      depends_on:
+        - redis
 
   postgres:
     image: "postgres:10"
