@@ -16,6 +16,7 @@
         <module>zuul</module>
         <module>eureka</module>
         <module>frontend</module>
+        <module>game</module>
     </modules>
 
     <properties>

@@ -1,0 +1,25 @@
+# Configuring here to use an actual database, whose IP address depends
+# on where Docker Compose starts it
+
+spring:
+  application:
+    name: game
+  datasource:
+    url: "jdbc:postgresql://postgres:5432/postgres"
+    username: "postgres"
+    password: ""
+    driver-class-name: "org.postgresql.Driver"
+  jpa:
+    database: "postgresql"
+    hibernate:
+      ddl-auto: "update"
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
+
