@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import javax.sql.DataSource
@@ -33,12 +32,14 @@ class WebSecurityConfig(
                 .and()
                 //
                 .authorizeRequests()
-                .antMatchers("/userservice").authenticated()
+                .antMatchers("/user").authenticated()
                 .antMatchers("/signIn").permitAll()
-                .antMatchers("/userservice-service/usersInfoCount").permitAll()
-                .antMatchers("/userservice-service/**").authenticated()
-                .antMatchers("/greetings/**").authenticated()
-                .anyRequest().permitAll()
+
+                .antMatchers("/user-service/usersInfoCount").permitAll()
+                .antMatchers("/user-service/**").authenticated()
+                .antMatchers("/highscore/**").authenticated()
+                .antMatchers("/frontend/**").permitAll()
+                .anyRequest().denyAll()
                 .and()
                 /*
                     CSRF would be on by default.

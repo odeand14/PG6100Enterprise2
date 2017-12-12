@@ -1,4 +1,18 @@
 spring:
+  application:
+    name: user-service
+  datasource:
+    url: "jdbc:postgresql://postgres:5432/postgres"
+    username: "postgres"
+    password: ""
+    driver-class-name: "org.postgresql.Driver"
+  jpa:
+    database: "postgresql"
+    hibernate:
+      # This is tricky. Schema handling should not really be done
+      # from Hibernate, but rather use an external tool like Flyway,
+      # as to avoid issues with schema migration and losing existing data.
+      ddl-auto: "update"
   # specify where Redis can be found.
   # Note: the IP address is based on Docker-Compose
   redis:
@@ -16,3 +30,13 @@ security:
 logging:
   level:
     org.springframework.security: debug
+
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
