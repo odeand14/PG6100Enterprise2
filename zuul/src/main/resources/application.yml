@@ -23,8 +23,8 @@
 zuul:
   routes:
     user-service:
-      path: /userservice-service/**
-      url: http://userservice-service:8080/
+      path: /user-service/**
+      url: http://user-service:8080/
       # Cookies are sensitive data. So, by default,
       # Zool removes them when proxying.
       # But here we need the cookies for authentication,
@@ -33,7 +33,12 @@ zuul:
 
     highscore:
       path: /highscore/**
-      url: http://highscore:8080
+      url: http://highscore:8080/
+      sensitive-headers:
+
+    frontend:
+      path: /frontend/**
+      url: http://frontend/
       sensitive-headers:
 
 spring:

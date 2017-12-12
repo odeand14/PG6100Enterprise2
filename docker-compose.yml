@@ -14,12 +14,13 @@ services:
     depends_on:
         - eureka
 
-  user:
+  user-service:
     build:
       context: ./user-service
       dockerfile: Dockerfile
     depends_on:
       - redis
+      - postgres
 
   eureka:
     build:
@@ -27,16 +28,17 @@ services:
       dockerfile: Dockerfile
 
   frontend:
-      build:
-        context: ./frontend
-        dockerfile: Dockerfile
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
 
   highscore:
-      build:
-        context: ./frontend
-        dockerfile: Dockerfile
-      depends_on:
-        - redis
+    build:
+      context: ./highscore
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
 
   postgres:
     image: "postgres:10"

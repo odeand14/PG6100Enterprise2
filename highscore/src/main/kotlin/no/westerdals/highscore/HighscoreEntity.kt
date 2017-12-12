@@ -2,7 +2,6 @@ package no.westerdals.highscore
 
 
 // Created by Andreas Ødegaard on 10.12.2017.
-import org.hibernate.validator.constraints.Email
 import org.hibernate.validator.constraints.NotBlank
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -12,16 +11,14 @@ class HighscoreEntity(
 
         @get:Id
         @get:NotBlank
-        var userId: String?,
+        var scoreId: String?,
 
         @get:NotBlank
-        var name: String?,
-
-        var middleName: String?,
+        var score: String?,
 
         @get:NotBlank
-        var surname: String?,
+        var winner: String?,
 
-        @get:Email
-        var email: String?
+        @get:NotBlank
+        var looser: String?
 )

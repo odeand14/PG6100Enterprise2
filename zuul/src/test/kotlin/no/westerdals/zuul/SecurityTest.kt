@@ -80,7 +80,7 @@ class SecurityTest{
     @Test
     fun testUnauthorizedAccess(){
 
-        given().get("/userservice")
+        given().get("/user")
                 .then()
                 .statusCode(401)
     }
@@ -142,7 +142,7 @@ class SecurityTest{
         val cookies = registerUser(name, pwd)
         val session = cookies.first
 
-        given().get("/userservice")
+        given().get("/user")
                 .then()
                 .statusCode(401)
 
@@ -151,7 +151,7 @@ class SecurityTest{
             setting the CSRF token
          */
         given().cookie("SESSION", session)
-                .get("/userservice")
+                .get("/user")
                 .then()
                 .statusCode(200)
                 .body("name", equalTo(name))
@@ -163,7 +163,7 @@ class SecurityTest{
             the SESSION token.
          */
         given().auth().basic(name, pwd)
-                .get("/userservice")
+                .get("/user")
                 .then()
                 .statusCode(200)
                 .cookie("SESSION") // new SESSION cookie
