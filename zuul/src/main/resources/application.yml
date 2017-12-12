@@ -11,15 +11,6 @@
 #
 #
 
-#eureka:
-#  instance:
-#    preferIpAddress: true
-#  client:
-#    healthcheck:
-#      enabled: true
-#    serviceUrl:
-#      defaultZone: http://eureka:8761/eureka/
-
 zuul:
   routes:
     user-service:
@@ -35,6 +26,23 @@ zuul:
       path: /highscore/**
       url: http://highscore:8080
       sensitive-headers:
+
+    game:
+      path: /game/**
+      url: http://game:8080
+      sensitive-headers:
+
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
+
+
 
 spring:
   jpa:

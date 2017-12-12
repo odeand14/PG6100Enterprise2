@@ -38,7 +38,7 @@ class WebSecurityConfig(
                 .antMatchers("/userservice-service/usersInfoCount").permitAll()
                 .antMatchers("/userservice-service/**").authenticated()
                 .antMatchers("/greetings/**").authenticated()
-                .anyRequest().denyAll()
+                .anyRequest().permitAll()
                 .and()
                 /*
                     CSRF would be on by default.
