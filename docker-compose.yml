@@ -22,6 +22,14 @@ services:
       - redis
       - postgres
 
+  game:
+    build:
+      context: ./game
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
+
   eureka:
     build:
       context: ./eureka

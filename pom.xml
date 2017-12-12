@@ -15,7 +15,6 @@
         <module>user-service</module>
         <module>zuul</module>
         <module>eureka</module>
-        <module>frontend</module>
         <module>game</module>
     </modules>
 
