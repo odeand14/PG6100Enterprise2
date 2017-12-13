@@ -10,13 +10,17 @@ import javax.transaction.Transactional
 @Repository
 interface GameRepository : CrudRepository<GameEntity, Long>, GameRepositoryCustom {
 
+    fun findOneByGameId(id: Long): GameEntity?
+
 }
 
 @Transactional
 interface GameRepositoryCustom {
 
 
-    fun createGame(gameId:Long, player1Id: Long, player2Id: Long): Long
+    fun createGame(player1Id: Long, player2Id: Long): Long
+
+    fun addMove(gameId: Long, move: MovesEntity)
 }
 
 
@@ -28,9 +32,16 @@ open class GameRepositoryImpl : GameRepositoryCustom {
     private lateinit var em: EntityManager
 
 
-    override fun createGame(gameId:Long, player1Id: Long, player2Id: Long): Long {
-        val entity = GameEntity(null, player1Id, player2Id, null);
+    override fun createGame(player1Id: Long, player2Id: Long): Long {
+        val entity = GameEntity( player1Id, player2Id)
         em.persist(entity)
         return entity.gameId!!
+    }
+
+    override fun addMove(gameId:Long, move: MovesEntity) {
+        val gameEntity = em.find(GameEntity::class.java, gameId)!!
+
+        (gameEntity.gameMoves!!).add(move)
+        em.persist(gameEntity)
     }
 }

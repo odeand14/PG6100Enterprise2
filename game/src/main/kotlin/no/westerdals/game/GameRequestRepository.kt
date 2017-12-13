@@ -15,8 +15,6 @@ interface GameRequestRepository : CrudRepository<GameRequestEntity, Long>, GameR
 @Transactional
 interface GameRequestRepositoryCustom {
 
-
-
     fun createRequest(player1Id: Long): Long
 
     fun acceptRequest(player1Id: Long, player2Id: Long): Long
@@ -43,9 +41,10 @@ open class GameRequestRepositoryImpl : GameRequestRepositoryCustom {
         if (GRE.player2Id == null) {
             GRE.player2Id = player2Id
             em.persist(GRE)
+
             return GRE.id!!
         } else {
-            throw error("KUKK I HODET, DET FINNES IKKE EN BRA NOK MANN FAEN KOTLIN")
+            throw error("DIDNT WORK")
         }
 
 

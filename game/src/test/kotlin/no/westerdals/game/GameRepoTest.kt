@@ -33,7 +33,7 @@ class GameRepoTest {
     fun testCreate(){
         assertEquals(0, crud.count());
 
-        val id= crud.createGame(3, 10, 11);
+        val id= crud.createGame(3, 10);
 
         assertEquals(1, crud.count())
         assertEquals(id, crud.findOne(id).gameId)

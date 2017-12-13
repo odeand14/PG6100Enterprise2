@@ -17,8 +17,6 @@ class GameRequestEntity(
         var id: Long? = null,
 
 
-
-
         var player2Id: Long? = null,
 
         var gameId: Long? = null

@@ -9,21 +9,18 @@ import javax.persistence.OneToMany
 
 @Entity
 class GameEntity(
-
-
-        @get:Id
-        @get:NotNull
-        @get:GeneratedValue
-        var gameId: Long? = null,
-
         @get:NotNull
         var player1Id: Long,
 
         @get:NotNull
         var player2Id: Long,
 
+        @get:Id
+        @get:GeneratedValue
+        var gameId: Long? = null,
+
 
         //TODO: mappedby
-        @OneToMany(mappedBy = "GameEntity")
+        @OneToMany(mappedBy = "gameId")
         var gameMoves: ArrayList<MovesEntity>? = null
 )

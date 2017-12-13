@@ -19,6 +19,9 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
 
                 .antMatchers("/game").permitAll()
+                .antMatchers("/gameRequests/users/**").permitAll()
+                .antMatchers("/gameRequests/**").permitAll()
+                .antMatchers("/gameRequests/").permitAll()
                 .antMatchers("/**").permitAll()
 
                 .anyRequest().denyAll()
