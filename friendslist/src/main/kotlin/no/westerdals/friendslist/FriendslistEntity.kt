@@ -1,6 +1,5 @@
 package no.westerdals.friendslist
 
-import org.hibernate.validator.constraints.Email
 import org.hibernate.validator.constraints.NotBlank
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -9,6 +8,9 @@ import javax.persistence.Id
 class FriendslistEntity(
 
     @get:Id
+    @get:NotBlank
+    var id: Long?,
+
     @get:NotBlank
     var userId: String?,
 
