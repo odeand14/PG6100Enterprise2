@@ -37,7 +37,7 @@ class WebSecurityConfig(
 
                 .antMatchers("/user-service/usersInfoCount").permitAll()
                 .antMatchers("/user-service/**").authenticated()
-                .antMatchers("/highscore/**").authenticated()
+                .antMatchers("/highscore/**").permitAll()
                 .antMatchers("/frontend/**").permitAll()
                 .antMatchers("/game/**").permitAll()
                 .anyRequest().denyAll()

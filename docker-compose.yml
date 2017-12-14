@@ -12,6 +12,7 @@ services:
     ports:
       - "80:8080"
     depends_on:
+        - redis
         - eureka
 
   user-service:
@@ -46,7 +47,10 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - redis
-      - postgres
+      - scorepostgres
+
+  scorepostgres:
+    image: "postgres:10"
 
   postgres:
     image: "postgres:10"
