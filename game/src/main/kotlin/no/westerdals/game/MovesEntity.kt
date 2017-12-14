@@ -11,7 +11,7 @@ class MovesEntity(
         var gameentity: GameEntity? = null,
 
         @get:NotNull
-        var playerId: Long,
+        var playerusername: String,
 
         @get:NotNull
         var x: Int,
