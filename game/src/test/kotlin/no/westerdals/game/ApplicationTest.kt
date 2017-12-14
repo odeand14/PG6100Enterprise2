@@ -146,6 +146,7 @@ class ApplicationTest {
 
 
 
+        //player 1 does a move
         val respons = RestAssured.given().basePath("/move/${id}/${player1}/0/2")
                 .post()
                 .then()
