@@ -71,6 +71,8 @@ class RestApi(
     @PostMapping("/move/{gameid}/{playerid}/{xcoord}/{ycoord}",
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun postMove(@PathVariable gameid: Long, @PathVariable playerid: Long, @PathVariable xcoord: Int, @PathVariable ycoord: Int) : ResponseEntity<Map<String, String>> {
+
+
         if(  0 > xcoord || xcoord > 2 || ycoord > 2 || ycoord < 0) {
             return ResponseEntity.badRequest().body(hashMapOf("error" to "coordinates out of bound", "moveID" to "", "gameStatus" to "0"))
         }
@@ -176,14 +178,5 @@ class RestApi(
         return "gameroot"
     }
 
-    @PostMapping("/game")
-    fun createGame(@RequestBody gameEntity: GameEntity) {
 
-
-    }
-
-    @PostMapping("/moves")
-    fun posMove(@RequestBody gameMove: MovesEntity) {
-
-    }
 }
