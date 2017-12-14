@@ -3,7 +3,7 @@ package no.westerdals.game
 import java.util.ArrayList
 
 
-class GameBoard(val boardSize: Int, val rowsToWin: Int) {
+class GameBoardLogic(val boardSize: Int, val rowsToWin: Int) {
 
 
 

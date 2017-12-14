@@ -26,7 +26,7 @@ class GameBoardTest {
         val board = arrayOf(board1, board2, board3);
 
 
-        val gameBoard = GameBoard(3, 3)
+        val gameBoard = GameBoardLogic(3, 3)
 
 
         //TODO: this looping cant be right.
@@ -51,7 +51,7 @@ class GameBoardTest {
 
         val board = arrayOf(board1, board2, board3);
 
-        val gameBoard = GameBoard(3,3);
+        val gameBoard = GameBoardLogic(3,3);
 
         assertTrue(gameBoard.isGameWon2(board));
     }
@@ -63,7 +63,7 @@ class GameBoardTest {
 
         val board = arrayOf(board1, board2, board3);
 
-        val gameBoard = GameBoard(3,3);
+        val gameBoard = GameBoardLogic(3,3);
 
         assertTrue(gameBoard.isGameWon2(board));
     }
@@ -76,7 +76,7 @@ class GameBoardTest {
 
         val board = arrayOf(board1, board2, board3);
 
-        val gameBoard = GameBoard(3,3);
+        val gameBoard = GameBoardLogic(3,3);
 
         assertTrue(gameBoard.isGameWon2(board));
     }
@@ -89,7 +89,7 @@ class GameBoardTest {
 
         val board = arrayOf(board1, board2, board3);
 
-        val gameBoard = GameBoard(3,3);
+        val gameBoard = GameBoardLogic(3,3);
 
         assertTrue(gameBoard.isGameWon2(board));
     }
@@ -102,7 +102,7 @@ class GameBoardTest {
 
         val board = arrayOf(board1, board2, board3);
 
-        val gameBoard = GameBoard(3,3);
+        val gameBoard = GameBoardLogic(3,3);
 
         assertFalse(gameBoard.isGameWon2(board));
     }

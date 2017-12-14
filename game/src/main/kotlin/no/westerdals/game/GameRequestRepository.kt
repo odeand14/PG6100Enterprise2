@@ -8,7 +8,7 @@ import javax.transaction.Transactional
 
 @Repository
 interface GameRequestRepository : CrudRepository<GameRequestEntity, Long>, GameRequestRepositoryCustom {
-    fun findOneById(requestId: Long) : GameRequestEntity
+    fun findOneById(requestId: Long) : GameRequestEntity?
 
 }
 
@@ -17,7 +17,7 @@ interface GameRequestRepositoryCustom {
 
     fun createRequest(player1Id: Long): Long
 
-    fun acceptRequest(player1Id: Long, player2Id: Long): Long
+    fun acceptRequest(player1Id: Long, player2Id: Long): Long?
 
 }
 @Repository
@@ -34,10 +34,12 @@ open class GameRequestRepositoryImpl : GameRequestRepositoryCustom {
         return entity.id!!
     }
 
-    override fun acceptRequest(requestId: Long ,player2Id: Long): Long {
+    override fun acceptRequest(requestId: Long ,player2Id: Long): Long? {
 
     val found= (requestId)
-        val GRE = em.find(GameRequestEntity::class.java, requestId)!!
+        val GRE = em.find(GameRequestEntity::class.java, requestId)
+        ?: return null
+
         if (GRE.player2Id == null) {
             GRE.player2Id = player2Id
             em.persist(GRE)

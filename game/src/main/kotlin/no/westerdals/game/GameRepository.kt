@@ -21,6 +21,8 @@ interface GameRepositoryCustom {
     fun createGame(player1Id: Long, player2Id: Long): Long
 
     fun addMove(gameId: Long, move: MovesEntity)
+
+    fun changeGameStatus(gameId:Long, status: Int)
 }
 
 
@@ -42,6 +44,13 @@ open class GameRepositoryImpl : GameRepositoryCustom {
         val gameEntity = em.find(GameEntity::class.java, gameId)!!
 
         (gameEntity.gameMoves!!).add(move)
+        em.persist(gameEntity)
+    }
+
+    override fun changeGameStatus(gameId:Long, status: Int) {
+        val gameEntity = em.find(GameEntity::class.java, gameId)!!
+
+        gameEntity.gameDone = status
         em.persist(gameEntity)
     }
 }

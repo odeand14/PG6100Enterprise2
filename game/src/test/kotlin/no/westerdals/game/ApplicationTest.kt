@@ -7,6 +7,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
@@ -20,6 +21,13 @@ class ApplicationTest {
     protected var port = 0
 
 
+    @Autowired
+    private lateinit var gamecrud: GameRepository
+    @Autowired
+    private lateinit var movescrud: MovesRepository
+    @Autowired
+    private lateinit var requestcrud: GameRequestRepository
+
     @Before
     fun setup() {
 
@@ -28,6 +36,9 @@ class ApplicationTest {
         RestAssured.basePath = "/game"
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
+        gamecrud.deleteAll()
+        movescrud.deleteAll()
+        requestcrud.deleteAll()
 
     }
 
@@ -59,7 +70,7 @@ class ApplicationTest {
                 .get()
                 .then()
                 .statusCode(200)
-                .extract().body().asString().toLong()
+                .extract().body().asString()
 // TODO(reek): Test that the json response has the same value as the id we got in the first instance and that everythign is jk.
         println(reponse)
 
@@ -71,14 +82,14 @@ class ApplicationTest {
     @Test
     fun acceptGameRequesttest(){
 
-
+        //making a game request
         val requestId = RestAssured.given().basePath("/gameRequests/users/33")
                 .post()
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
-
+        //accepting the game request
         val id = RestAssured.given().basePath("/gameRequest/accept/35/${requestId}")
                 .patch()
                 .then()
@@ -88,30 +99,189 @@ class ApplicationTest {
     }
 
     @Test
+    fun acceptGameRequesttestNoRequest(){
+
+        val requestId = 78
+        //accepting the game request with no request
+        val id = RestAssured.given().basePath("/gameRequest/accept/35/${requestId}")
+                .patch()
+                .then()
+                .statusCode(404)
+                .extract().body().asString()
+
+    }
+
+    //Test to see if nothing happens if game dont exist
+    @Test
     fun postMoveTestNoGame(){
 
 
-        val requestRes = RestAssured.given().basePath("/move/3/4/5/6")
+        val requestRes = RestAssured.given().basePath("/move/3/4/0/0")
                 .post()
                 .then()
                 .statusCode(404)
                 .extract().body().asString()
 
-        Assert.assertEquals("{\"error\":\"NO GAME FOUND\",\"moveID\":\"\"}", requestRes)
+        Assert.assertEquals("{\"error\":\"NO GAME FOUND\",\"gameStatus\":\"0\",\"moveID\":\"\"}", requestRes)
     }
 
     @Test
     fun postMoveTest(){
 
 
-        val requestId = RestAssured.given().basePath("/move/3/4/5/6")
+        val player1 = 33
+        //making a game request
+        val gameId = RestAssured.given().basePath("/gameRequests/users/${player1}")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+        //accepting the game request
+        val id = RestAssured.given().basePath("/gameRequest/accept/35/${gameId}")
+                .patch()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+
+
+        val respons = RestAssured.given().basePath("/move/${id}/${player1}/0/2")
                 .post()
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-        println("###############")
-        println(requestId)
+
+    }
+
+    @Test
+    fun postMoveTestCoordinatesOutOfBound(){
+
+
+        val player1 = 33
+        //making a game request
+        val gameId = RestAssured.given().basePath("/gameRequests/users/${player1}")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+        //accepting the game request
+        val id = RestAssured.given().basePath("/gameRequest/accept/35/${gameId}")
+                .patch()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+
+
+        val respons = RestAssured.given().basePath("/move/${id}/${player1}/3/4")
+                .post()
+                .then()
+                .statusCode(400)
+                .extract().body().asString()
+
+
+    }
+
+    @Test
+    fun postMoveSameCoordinateTwiceTest(){
+
+
+        val player1 = 33
+        val player2 = 55
+
+        //making a game request
+        val gameId = RestAssured.given().basePath("/gameRequests/users/${player1}")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+        //accepting the game request
+        val id = RestAssured.given().basePath("/gameRequest/accept/${player2}/${gameId}")
+                .patch()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+
+
+        val respons1 = RestAssured.given().basePath("/move/${id}/${player1}/1/2")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+        val respons2 = RestAssured.given().basePath("/move/${id}/${player2}/1/2")
+                .post()
+                .then()
+                .statusCode(400)
+                .extract().body().asString()
+
+
+    }
+
+
+    //plays the hole game
+    @Test
+    fun gameWorkingTest(){
+        val player1 = 33
+        val player2 = 55
+        //making a game request
+        val reqId = RestAssured.given().basePath("/gameRequests/users/${player1}")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+        //accepting the game request
+        val gameId = RestAssured.given().basePath("/gameRequest/accept/${player2}/${reqId}")
+                .patch()
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+
+
+        //playing game
+        RestAssured.given().basePath("/move/${gameId}/${player1}/0/0")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+
+        RestAssured.given().basePath("/move/${gameId}/${player2}/2/2")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+        RestAssured.given().basePath("/move/${gameId}/${player1}/0/1")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+
+
+        RestAssured.given().basePath("/move/${gameId}/${player2}/1/2")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+
+        val gameResult = RestAssured.given().basePath("/move/${gameId}/${player1}/0/2")
+                .post()
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+        Assert.assertEquals( "fsdf",gameResult)
+
     }
 
 
