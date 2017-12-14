@@ -33,7 +33,7 @@ class GameRequestRepoTest {
     fun testCreate(){
         assertEquals(0, crud.count());
 
-        val id= crud.createRequest(40)
+        val id= crud.createRequest("foo")
 
         assertNotNull(id)
         assertEquals(1, crud.count())
@@ -44,14 +44,14 @@ class GameRequestRepoTest {
     fun testAcceptRequest(){
         assertEquals(0, crud.count());
 
-        val id= crud.createRequest(40)
+        val id= crud.createRequest("foo")
 
         assertNotNull(id)
         assertEquals(1, crud.count())
         assertEquals(id, crud.findOne(id).id)
 
 
-        val acceptID = crud.acceptRequest(id, 42)
+        val acceptID = crud.acceptRequest(id, "bar")
 
         assertNotNull(acceptID)
 

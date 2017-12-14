@@ -15,9 +15,9 @@ interface GameRequestRepository : CrudRepository<GameRequestEntity, Long>, GameR
 @Transactional
 interface GameRequestRepositoryCustom {
 
-    fun createRequest(player1Id: Long): Long
+    fun createRequest(player1username: String): Long
 
-    fun acceptRequest(player1Id: Long, player2Id: Long): Long?
+    fun acceptRequest(requestId: Long, player2username: String): Long?
 
 }
 @Repository
@@ -28,20 +28,20 @@ open class GameRequestRepositoryImpl : GameRequestRepositoryCustom {
     private lateinit var em: EntityManager
 
 
-    override fun createRequest( player1Id: Long): Long {
-        val entity = GameRequestEntity(player1Id);
+    override fun createRequest(player1username: String): Long {
+        val entity = GameRequestEntity(player1username);
         em.persist(entity)
         return entity.id!!
     }
 
-    override fun acceptRequest(requestId: Long ,player2Id: Long): Long? {
+    override fun acceptRequest(requestId: Long, player2username: String): Long? {
 
     val found= (requestId)
         val GRE = em.find(GameRequestEntity::class.java, requestId)
         ?: return null
 
-        if (GRE.player2Id == null) {
-            GRE.player2Id = player2Id
+        if (GRE.player2username == null) {
+            GRE.player2username = player2username
             em.persist(GRE)
 
             return GRE.id!!

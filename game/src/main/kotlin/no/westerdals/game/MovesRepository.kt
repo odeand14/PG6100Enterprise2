@@ -19,7 +19,7 @@ interface MovesRepository : CrudRepository<MovesEntity, Long>, MovesRepositoryCu
 @Transactional
 interface MovesRepositoryCustom {
 
-    fun createMove(gameId: Long, playerId: Long, x: Int, y: Int): Long
+    fun createMove(gameId: Long, playerusername: String, x: Int, y: Int): Long
 }
 
 
@@ -32,12 +32,12 @@ open class MovesRepositoryImpl : MovesRepositoryCustom {
 
 
     //TODO: har fucket opp denne
-    override fun createMove(gameId: Long, playerId: Long, x: Int, y: Int): Long {
+    override fun createMove(gameId: Long, playerusername: String, x: Int, y: Int): Long {
 
         val gameEntity = em.find(GameEntity::class.java, gameId)!!
 
 
-        val entity = MovesEntity( gameEntity, playerId, x, y )
+        val entity = MovesEntity( gameEntity, playerusername, x, y )
         em.persist(entity)
 
         gameEntity.gameMoves.add(entity)

@@ -7,11 +7,11 @@ import javax.persistence.*
 
 @Entity
 class GameEntity(
-        @get:NotNull
-        var player1Id: Long,
+        @get:NotBlank
+        var player1username: String,
 
-        @get:NotNull
-        var player2Id: Long,
+        @get:NotBlank
+        var player2username: String,
 
         @get:Id
         @get:GeneratedValue
