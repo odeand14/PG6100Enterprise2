@@ -3,9 +3,9 @@
 
 spring:
   application:
-    name: highscore
+    name: friendslist
   datasource:
-    url: "jdbc:postgresql://postgres:5432/postgres"
+    url: "jdbc:postgresql://friendslistpostgres:5432/postgres"
     username: "postgres"
     password: ""
     driver-class-name: "org.postgresql.Driver"
@@ -16,6 +16,12 @@ spring:
       # from Hibernate, but rather use an external tool like Flyway,
       # as to avoid issues with schema migration and losing existing data.
       ddl-auto: "update"
+  redis:
+    host: redis
+    port: 6379
+  session:
+    # specify that session tokes should be stored in Redis
+    store-type: redis
 
 eureka:
   instance:
@@ -25,4 +31,5 @@ eureka:
       enabled: true
     serviceUrl:
       defaultZone: http://eureka:8761/eureka/
+
 

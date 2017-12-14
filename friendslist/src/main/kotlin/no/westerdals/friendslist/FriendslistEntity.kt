@@ -8,14 +8,14 @@ import javax.persistence.Id
 class FriendslistEntity(
 
     @get:Id
-    @get:NotBlank
     var id: Long?,
 
-    @get:NotBlank
-    var userId: String?,
+    @NotBlank
+    var userId: Int?,
 
-    @get:NotBlank
-    var friendId: String?,
+    @NotBlank
+    var friendId: Int?,
 
+    @NotBlank
     var date: String?
 )

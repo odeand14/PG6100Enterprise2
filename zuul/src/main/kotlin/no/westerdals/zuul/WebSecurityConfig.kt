@@ -40,6 +40,7 @@ class WebSecurityConfig(
                 .antMatchers("/highscore/**").permitAll()
                 .antMatchers("/frontend/**").permitAll()
                 .antMatchers("/game/**").permitAll()
+                .antMatchers("/friendslist/**").permitAll()
                 .anyRequest().denyAll()
                 .and()
                 /*

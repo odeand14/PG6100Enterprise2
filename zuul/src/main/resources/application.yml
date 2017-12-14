@@ -37,6 +37,10 @@ zuul:
       url: http://game:8080
       sensitive-headers:
 
+    friendslist:
+      path: /friendslist/**
+      url: http://friendslist:8080
+      sensitive-headers:
 
 eureka:
   instance:
