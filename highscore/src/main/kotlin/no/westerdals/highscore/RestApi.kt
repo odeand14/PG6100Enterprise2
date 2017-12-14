@@ -47,17 +47,17 @@ class RestApi(
     fun replace(
             @PathVariable id: Long,
             @RequestBody dto: HighscoreEntity)
-            : ResponseEntity<Void> {
+            : ResponseEntity<HighscoreEntity> {
 
         if (id != dto.id) {
             return ResponseEntity.status(409).build()
         }
 
-        val alreadyExists = highscoreCrud.existsHighscore(id)
+        val alreadyExists = highscoreCrud.exists(id)
         var code = if(alreadyExists) 204 else 201
 
         try {
-            highscoreCrud.save(dto)
+            return ResponseEntity.status(code).body(highscoreCrud.save(dto))
         } catch (e: Exception) {
             code = 400
         }
@@ -70,14 +70,14 @@ class RestApi(
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun delete(
             @PathVariable id: Long)
-            : ResponseEntity<Void> {
+            : ResponseEntity<Long> {
 
 
         val alreadyExists = highscoreCrud.existsHighscore(id)
         var code = if(alreadyExists) 204 else 200
 
         try {
-            highscoreCrud.deleteHighscore(id)
+            return ResponseEntity.status(code).body(highscoreCrud.deleteHighscore(id))
         } catch (e: Exception) {
             code = 400
         }
@@ -90,7 +90,7 @@ class RestApi(
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun post(
             @RequestBody body: String)
-            : ResponseEntity<Void> {
+            : ResponseEntity<Long> {
 
         if (body != "") {
 
@@ -102,11 +102,11 @@ class RestApi(
             val user2 = rootNode.get("user2").asText()
             val score1 = rootNode.get("score1").asInt()
             val score2 = rootNode.get("score2").asInt()
-
+            val score = HighscoreEntity(null, score1, score2, user1, user2)
             var code = 201
 
             try {
-                highscoreCrud.createHighscore(score1, score2, user1, user2)
+                return ResponseEntity.status(code).body(highscoreCrud.save(score).id)
             } catch (e: Exception) {
                 code = 400
             }

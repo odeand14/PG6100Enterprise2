@@ -1,16 +1,3 @@
-
-
-#
-#zuul:
-#  routes:
-#    service:
-#      path: /service/**
-#    frontend:
-#      path: /**
-#      url: http://frontend/
-#
-#
-
 zuul:
   routes:
     user-service:

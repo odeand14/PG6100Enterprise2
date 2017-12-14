@@ -14,10 +14,8 @@ class HighscoreEntity(
         @get:GeneratedValue
         var id: Long? = null,
 
-        @get:NotBlank
         var score1: Int?,
 
-        @get:NotBlank
         var score2: Int?,
 
         @get:NotBlank

@@ -34,7 +34,6 @@ class WebSecurityConfig(
                 .authorizeRequests()
                 .antMatchers("/user").authenticated()
                 .antMatchers("/signIn").permitAll()
-
                 .antMatchers("/user-service/usersInfoCount").permitAll()
                 .antMatchers("/user-service/**").authenticated()
                 .antMatchers("/highscore/**").permitAll()
