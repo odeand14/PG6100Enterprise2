@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+
+  redis:
+    image: "redis:latest"
+
+  zuul:
+    build:
+      context: ./zuul
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"
+    depends_on:
+        - eureka
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
+
+  game:
+    build:
+      context: ./game
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
+
+  eureka:
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+  highscore:
+    build:
+      context: ./highscore
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
+
+  postgres:
+    image: "postgres:10"
+
+
+
+

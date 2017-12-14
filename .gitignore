@@ -173,6 +173,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+node
+frontend/build
 
 # Typescript v1 declaration files
 typings/

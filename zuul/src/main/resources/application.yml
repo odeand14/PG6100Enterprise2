@@ -1,0 +1,69 @@
+
+
+#
+#zuul:
+#  routes:
+#    service:
+#      path: /service/**
+#    frontend:
+#      path: /**
+#      url: http://frontend/
+#
+#
+
+zuul:
+  routes:
+    user-service:
+      path: /user-service/**
+      url: http://user-service:8080/
+      # Cookies are sensitive data. So, by default,
+      # Zool removes them when proxying.
+      # But here we need the cookies for authentication,
+      # so we need to allow them.
+      sensitive-headers:
+
+    highscore:
+      path: /highscore/**
+      url: http://highscore:8080/
+      sensitive-headers:
+
+    frontend:
+      path: /frontend/**
+      url: http://frontend/
+      sensitive-headers:
+
+    game:
+      path: /game/**
+      url: http://game:8080
+      sensitive-headers:
+
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/
+
+
+
+spring:
+  jpa:
+    show-sql: true
+  session:
+    store-type: redis
+  redis:
+    host: redis
+    port: 6379
+
+
+security:
+  sessions: ALWAYS
+
+
+
+logging:
+  level:
+    org.springframework.security: debug
