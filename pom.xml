@@ -18,6 +18,7 @@
         <module>frontend</module>
         <module>friendslist</module>
         <module>game</module>
+        <module>endtoendtests</module>
     </modules>
 
     <properties>
@@ -215,6 +216,13 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>selenium</artifactId>
                 <version>${version.testcontainers}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <!-- For handling waiting of asynchronous events -->
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>3.0.0</version>
                 <scope>test</scope>
             </dependency>
 
