@@ -7,8 +7,8 @@ import javax.persistence.*
 class MovesEntity(
 
 
-        @get:NotNull
-        var gameId: Long,
+        @get:ManyToOne
+        var gameentity: GameEntity? = null,
 
         @get:NotNull
         var playerId: Long,
@@ -22,6 +22,8 @@ class MovesEntity(
         @get:Id
         @get:GeneratedValue
         var id: Long? = null
+
+
 
 
 )

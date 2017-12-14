@@ -43,8 +43,9 @@ open class GameRepositoryImpl : GameRepositoryCustom {
     override fun addMove(gameId:Long, move: MovesEntity) {
         val gameEntity = em.find(GameEntity::class.java, gameId)!!
 
-        (gameEntity.gameMoves!!).add(move)
-        em.persist(gameEntity)
+        em.persist(move)
+
+        gameEntity.gameMoves.add(move)
     }
 
     override fun changeGameStatus(gameId:Long, status: Int) {

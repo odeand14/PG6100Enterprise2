@@ -57,9 +57,9 @@ class GameBoardTest {
     }
     @Test
     fun testWonGameDiagonal2(){
-        val board1 = arrayOf<Pieces>(Pieces.Empty, Pieces.Empty, Pieces.Cross);
-        val board2 = arrayOf<Pieces>(Pieces.Empty, Pieces.Cross, Pieces.Empty);
-        val board3 = arrayOf<Pieces>(Pieces.Cross, Pieces.Empty, Pieces.Circle);
+        val board1 = arrayOf<Pieces>(Pieces.Empty, Pieces.Empty, Pieces.Circle);
+        val board2 = arrayOf<Pieces>(Pieces.Empty, Pieces.Circle, Pieces.Empty);
+        val board3 = arrayOf<Pieces>(Pieces.Circle, Pieces.Empty, Pieces.Circle);
 
         val board = arrayOf(board1, board2, board3);
 

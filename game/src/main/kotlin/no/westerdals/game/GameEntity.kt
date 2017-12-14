@@ -2,10 +2,7 @@ package no.westerdals.game
 
 import org.hibernate.validator.constraints.NotBlank
 import org.jetbrains.annotations.NotNull
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 
 @Entity
@@ -26,7 +23,10 @@ class GameEntity(
         @get:NotNull
         var gameDone: Int = 0,
 
-        //TODO: mappedby
-        @OneToMany(mappedBy = "gameEntity")
-        var gameMoves: ArrayList<MovesEntity>? = null
+        @get:OneToMany(
+                fetch = FetchType.LAZY,
+                mappedBy = "gameentity",
+                cascade = arrayOf(CascadeType.ALL)
+        )
+        var gameMoves: MutableList<MovesEntity> = mutableListOf()
 )

@@ -10,7 +10,8 @@ import javax.transaction.Transactional
 @Repository
 interface MovesRepository : CrudRepository<MovesEntity, Long>, MovesRepositoryCustom {
 
-    fun findOneByGameId(id: Long): MovesEntity
+    //TODO: DETTE VAR SYNDEREN
+    //fun findOneByGameId(id: Long): MovesEntity
 
 
 }
@@ -29,9 +30,17 @@ open class MovesRepositoryImpl : MovesRepositoryCustom {
     @PersistenceContext
     private lateinit var em: EntityManager
 
+
+    //TODO: har fucket opp denne
     override fun createMove(gameId: Long, playerId: Long, x: Int, y: Int): Long {
-        val entity = MovesEntity( gameId, playerId, x, y )
+
+        val gameEntity = em.find(GameEntity::class.java, gameId)!!
+
+
+        val entity = MovesEntity( gameEntity, playerId, x, y )
         em.persist(entity)
+
+        gameEntity.gameMoves.add(entity)
         return entity.id!!
     }
 }

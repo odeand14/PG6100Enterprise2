@@ -82,7 +82,7 @@ class RestApi(
         }
 
         val movelist = foundGame.gameMoves
-        if (movelist == null){
+        if (movelist == null  || movelist.size <= 0){
             if (playerid != foundGame.player1Id ) {
                 return ResponseEntity.badRequest().body(hashMapOf("error" to "PLAYER 1 MUST MAKE THE FIRST MOVE", "moveID" to "", "gameStatus" to "0"))
             }
@@ -112,7 +112,8 @@ class RestApi(
 
 
 
-        val gameWon = GameWon((foundGame.gameMoves!!).sortedWith(compareBy({ it.id })))
+        //val gameWon = GameWon(foundGame.gameMoves.sortedWith(compareBy({ it.id })))
+        val gameWon = GameWon(foundGame.gameMoves)
         val winner: Long
         if(movelist.size >= 9 && !gameWon){
             gamecrud.changeGameStatus(gameid,3)
@@ -136,7 +137,7 @@ class RestApi(
     }
 
     //TODO: make sequense instead to make sure we get the first correctly
-    fun GameWon(movelist: List<MovesEntity>? ) : Boolean{
+    fun GameWon(movelist: List<MovesEntity> ) : Boolean{
 
         //TODO: this is the easiest way in kotlin?
         val board1 = arrayOf<Pieces>(Pieces.Empty, Pieces.Empty, Pieces.Empty);
@@ -149,7 +150,7 @@ class RestApi(
 
 
         var boolswitch = true;
-        for (move in movelist!!) {
+        for (move in movelist) {
             if(boolswitch) {
                 board[move.x][move.y] = Pieces.Cross
                 boolswitch = false
