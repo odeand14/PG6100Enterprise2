@@ -34,10 +34,12 @@ class WebSecurityConfig(
                 .authorizeRequests()
                 .antMatchers("/user").authenticated()
                 .antMatchers("/signIn").permitAll()
+
                 .antMatchers("/user-service/usersInfoCount").permitAll()
                 .antMatchers("/user-service/**").authenticated()
                 .antMatchers("/highscore/**").authenticated()
                 .antMatchers("/frontend/**").permitAll()
+                .antMatchers("/game/**").permitAll()
                 .anyRequest().denyAll()
                 .and()
                 /*
