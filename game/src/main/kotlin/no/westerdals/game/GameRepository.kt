@@ -18,7 +18,7 @@ interface GameRepository : CrudRepository<GameEntity, Long>, GameRepositoryCusto
 interface GameRepositoryCustom {
 
 
-    fun createGame(player1Id: Long, player2Id: Long): Long
+    fun createGame(player1username: String, player2username: String): Long
 
     fun addMove(gameId: Long, move: MovesEntity)
 
@@ -34,8 +34,8 @@ open class GameRepositoryImpl : GameRepositoryCustom {
     private lateinit var em: EntityManager
 
 
-    override fun createGame(player1Id: Long, player2Id: Long): Long {
-        val entity = GameEntity( player1Id, player2Id)
+    override fun createGame(player1username: String, player2username: String): Long {
+        val entity = GameEntity(player1username, player2username)
         em.persist(entity)
         return entity.gameId!!
     }

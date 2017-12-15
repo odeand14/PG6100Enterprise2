@@ -1,29 +1,14 @@
-
-
-#
-#zuul:
-#  routes:
-#    service:
-#      path: /service/**
-#    frontend:
-#      path: /**
-#      url: http://frontend/
-#
-#
-
 zuul:
   routes:
     user-service:
       path: /user-service/**
+      serviceId: user-service
       url: http://user-service:8080/
-      # Cookies are sensitive data. So, by default,
-      # Zool removes them when proxying.
-      # But here we need the cookies for authentication,
-      # so we need to allow them.
       sensitive-headers:
 
     highscore:
       path: /highscore/**
+      serviceId: highscore-service
       url: http://highscore:8080/
       sensitive-headers:
 
@@ -34,9 +19,15 @@ zuul:
 
     game:
       path: /game/**
+      serviceId: game-service
       url: http://game:8080
       sensitive-headers:
 
+    friendslist:
+      path: /friendslist/**
+      serviceId: friendslist-service
+      url: http://friendslist:8080
+      sensitive-headers:
 
 eureka:
   instance:

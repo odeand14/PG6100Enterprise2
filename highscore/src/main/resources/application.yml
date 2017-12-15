@@ -5,17 +5,32 @@ spring:
   application:
     name: highscore
   datasource:
-    url: "jdbc:postgresql://postgres:5432/postgres"
+    url: "jdbc:postgresql://scorepostgres:5432/postgres"
     username: "postgres"
     password: ""
     driver-class-name: "org.postgresql.Driver"
   jpa:
     database: "postgresql"
+    show-sql: true
     hibernate:
       # This is tricky. Schema handling should not really be done
       # from Hibernate, but rather use an external tool like Flyway,
       # as to avoid issues with schema migration and losing existing data.
       ddl-auto: "update"
+  redis:
+    host: redis
+    port: 6379
+  session:
+    # specify that session tokes should be stored in Redis
+    store-type: redis
+
+security:
+  sessions: NEVER
+
+
+logging:
+  level:
+    org.springframework.security: debug
 
 eureka:
   instance:

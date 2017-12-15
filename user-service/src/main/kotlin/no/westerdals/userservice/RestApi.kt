@@ -2,25 +2,29 @@ package no.westerdals.userservice
 
 // Created by Andreas Ødegaard on 10.12.2017.
 
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.ApiResponse
 import org.springframework.data.repository.CrudRepository
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Repository
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 
 @Repository
 interface UserInfoRepository : CrudRepository<UserInfoEntity, String>
 
-
+@Api(value = "/user-service", description = "Handling of creating, editing and retrieving of users")
+@Validated
 @RestController
 class RestApi(
         private val crud: UserInfoRepository
 ) {
 
-    /**
-     * Get the number of existing users
-     */
+    @ApiOperation("Get the number of existing users")
     @GetMapping(path = arrayOf("/usersInfoCount"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getCount(): ResponseEntity<Long> {
@@ -28,10 +32,8 @@ class RestApi(
         return ResponseEntity.ok(crud.count())
     }
 
-    /*
-        Note: for simplicity here using Entity as DTO...
-     */
 
+    @ApiOperation("Get all users in the database")
     @GetMapping(path = arrayOf("/usersInfo"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getAll(): ResponseEntity<List<UserInfoEntity>> {
@@ -39,10 +41,11 @@ class RestApi(
         return ResponseEntity.ok(crud.findAll().toList())
     }
 
-
+    @ApiOperation("Get user by ID")
     @GetMapping(path = arrayOf("/usersInfo/{id}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun getById(@PathVariable id: String)
+    fun getById(@ApiParam("The user id")
+            @PathVariable id: String)
             : ResponseEntity<UserInfoEntity> {
 
         val entity = crud.findOne(id)
@@ -52,10 +55,11 @@ class RestApi(
     }
 
 
-
+    @ApiOperation("Puts values in given user, if nonexistent creates a new user")
     @PutMapping(path = arrayOf("/usersInfo/{id}"),
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun replace(
+    @ApiResponse(code = 204 or 201, message = "The newly altered or created user")
+    fun replace(@ApiParam("The user that will replace the old one. Cannot change its id though.")
             @PathVariable id: String,
             @RequestBody dto: UserInfoEntity)
             : ResponseEntity<Void> {

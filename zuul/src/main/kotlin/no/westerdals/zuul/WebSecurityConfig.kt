@@ -34,12 +34,14 @@ class WebSecurityConfig(
                 .authorizeRequests()
                 .antMatchers("/user").authenticated()
                 .antMatchers("/signIn").permitAll()
-
                 .antMatchers("/user-service/usersInfoCount").permitAll()
+                .antMatchers("/user-service/v2/api-docs").permitAll()
                 .antMatchers("/user-service/**").authenticated()
-                .antMatchers("/highscore/**").authenticated()
+                .antMatchers("/highscore/**").permitAll()
                 .antMatchers("/frontend/**").permitAll()
                 .antMatchers("/game/**").permitAll()
+                .antMatchers("/friendslist/**").permitAll()
+                .antMatchers("/**/v2/api-docs","/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html").permitAll()
                 .anyRequest().denyAll()
                 .and()
                 /*

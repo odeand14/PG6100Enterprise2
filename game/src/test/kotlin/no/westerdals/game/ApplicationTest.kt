@@ -33,7 +33,7 @@ class ApplicationTest {
 
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = port
-        RestAssured.basePath = "/game"
+        RestAssured.basePath = "/api"
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
         gamecrud.deleteAll()
@@ -44,30 +44,21 @@ class ApplicationTest {
 
 
     @Test
-    fun testGametest(){
+    fun createGameRequestTest() {
 
-        val str = RestAssured.given().basePath("/game")
-                .get()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
-
-        Assert.assertEquals("Gametest", str)
-    }
-
-    @Test
-    fun createGameRequesttest(){
+        val username = "foo"
+        val password = "123"
 
         //Making game request
-        val id = RestAssured.given().basePath("/gameRequests/users/33")
-                .post()
+        val id = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
-        //Get Game request by id
-        val reponse = RestAssured.given().basePath("/gameRequests/${id}")
-                .get()
+        //Get Game-request by id
+        val reponse = RestAssured.given().auth().basic(username, password)
+                .get("/gameRequests/${id}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -80,44 +71,75 @@ class ApplicationTest {
 
     //TODO: only test potitive respons
     @Test
-    fun acceptGameRequesttest(){
+    fun acceptGameRequestTest() {
+
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
+
 
         //making a game request
-        val requestId = RestAssured.given().basePath("/gameRequests/users/33")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val id = RestAssured.given().basePath("/gameRequest/accept/35/${requestId}")
-                .patch()
+        val id = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+    }
+
+
+    @Test
+    fun acceptGameRequestWithCreatorUsernameTest() {
+
+        val username = "foo"
+        val password = "123"
+
+
+        //making a game request
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
+        //accepting the game request
+        val id = RestAssured.given().auth().basic(username, password)
+                .patch("/gameRequests/${requestId}/user/${username}")
+                .then()
+                .statusCode(409)
+                .extract().body().asString()
     }
 
-    @Test
-    fun acceptGameRequesttestNoRequest(){
 
-        val requestId = 78
+    @Test
+    fun acceptGameRequestNoRequestTest() {
+
+        val username = "foo"
+        val password = "123"
+        val requestId = 343;
+
         //accepting the game request with no request
-        val id = RestAssured.given().basePath("/gameRequest/accept/35/${requestId}")
-                .patch()
+        val id = RestAssured.given().auth().basic(username, password)
+                .patch("/gameRequests/${requestId}/user/${username}")
                 .then()
                 .statusCode(404)
                 .extract().body().asString()
-
     }
 
     //Test to see if nothing happens if game dont exist
     @Test
-    fun postMoveTestNoGame(){
+    fun postMoveNoGameTest() {
+        val username = "foo"
+        val password = "123"
 
-
-        val requestRes = RestAssured.given().basePath("/move/3/4/0/0")
-                .post()
+        val requestRes = RestAssured.given().auth().basic(username, password)
+                .post("/move/4/0/0/users/3")
                 .then()
                 .statusCode(404)
                 .extract().body().asString()
@@ -126,29 +148,30 @@ class ApplicationTest {
     }
 
     @Test
-    fun postMoveTest(){
+    fun postMoveTest() {
 
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
 
-        val player1 = 33
         //making a game request
-        val gameId = RestAssured.given().basePath("/gameRequests/users/${player1}")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val id = RestAssured.given().basePath("/gameRequest/accept/35/${gameId}")
-                .patch()
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
-
 
 
         //player 1 does a move
-        val respons = RestAssured.given().basePath("/move/${id}/${player1}/0/2")
-                .post()
+        val respons = RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/0/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -157,199 +180,209 @@ class ApplicationTest {
     }
 
     @Test
-    fun postMoveTestCoordinatesOutOfBound(){
+    fun postMoveTestCoordinatesOutOfBound() {
 
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
 
-        val player1 = 33
         //making a game request
-        val gameId = RestAssured.given().basePath("/gameRequests/users/${player1}")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val id = RestAssured.given().basePath("/gameRequest/accept/35/${gameId}")
-                .patch()
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
 
-
-        val respons = RestAssured.given().basePath("/move/${id}/${player1}/3/4")
-                .post()
+        //player 1 does a move
+        val respons = RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/3/4/users/${username}")
                 .then()
                 .statusCode(400)
                 .extract().body().asString()
 
-
     }
 
+
     @Test
-    fun postMoveSameCoordinateTwiceTest(){
+    fun postMoveSameCoordinateTwiceTest() {
 
-
-        val player1 = 33
-        val player2 = 55
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
 
         //making a game request
-        val gameId = RestAssured.given().basePath("/gameRequests/users/${player1}")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val id = RestAssured.given().basePath("/gameRequest/accept/${player2}/${gameId}")
-                .patch()
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
 
-
-        val respons1 = RestAssured.given().basePath("/move/${id}/${player1}/1/2")
-                .post()
+        //player 1 does a move
+        val respons = RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/1/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-        val respons2 = RestAssured.given().basePath("/move/${id}/${player2}/1/2")
-                .post()
+        //player 2 does a move
+        val respons2 = RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/1/1/users/${username}")
                 .then()
-                .statusCode(400)
+                .statusCode(409)
                 .extract().body().asString()
 
 
     }
 
 
-    //plays the hole game
+    //plays the whole game
     @Test
-    fun player1winGameTest(){
-        val player1 = 33
-        val player2 = 55
+    fun player1winGameTest() {
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
+
         //making a game request
-        val reqId = RestAssured.given().basePath("/gameRequests/users/${player1}")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val gameId = RestAssured.given().basePath("/gameRequest/accept/${player2}/${reqId}")
-                .patch()
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
 
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/0/0/users/${username}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
 
-        //playing game
-        RestAssured.given().basePath("/move/${gameId}/${player1}/0/0")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/1/1/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
 
-        RestAssured.given().basePath("/move/${gameId}/${player2}/2/2")
-                .post()
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/0/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-        RestAssured.given().basePath("/move/${gameId}/${player1}/0/1")
-                .post()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
-
-
-
-        RestAssured.given().basePath("/move/${gameId}/${player2}/1/2")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/1/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
 
-        val gameResult = RestAssured.given().basePath("/move/${gameId}/${player1}/0/2")
-                .post()
+        //player 1 does a move
+        val gameResult = RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/0/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
+
 
         //Assert.assertEquals( "{\"error\":\"NONE\",\"gameStatus\":\"1\",\"moveID\":\"5\"}",gameResult)
         Assert.assertTrue(gameResult.contains("\"gameStatus\":\"1"))
     }
 
 
-
     //plays the hole game
     @Test
-    fun player2winGameTest(){
-        val player1 = 33
-        val player2 = 55
+    fun player2winGameTest() {
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
+
         //making a game request
-        val reqId = RestAssured.given().basePath("/gameRequests/users/${player1}")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val gameId = RestAssured.given().basePath("/gameRequest/accept/${player2}/${reqId}")
-                .patch()
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
 
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/0/0/users/${username}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
 
-        //playing game
-        RestAssured.given().basePath("/move/${gameId}/${player1}/0/0")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/2/0/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
 
-        RestAssured.given().basePath("/move/${gameId}/${player2}/2/0")
-                .post()
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/2/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-        RestAssured.given().basePath("/move/${gameId}/${player1}/2/2")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/1/1/users/${username2}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/1/2/users/${username}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+        //player 2 does a move
+        val gameResult = RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/0/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
 
 
-        RestAssured.given().basePath("/move/${gameId}/${player2}/1/1")
-                .post()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
-
-
-        RestAssured.given().basePath("/move/${gameId}/${player1}/1/2")
-                .post()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
-
-
-
-        val gameResult = RestAssured.given().basePath("/move/${gameId}/${player2}/0/2")
-                .post()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
 
         Assert.assertTrue(gameResult.contains("\"gameStatus\":\"2"))
         //Assert.assertEquals( "{\"error\":\"NONE\",\"gameStatus\":\"2\",\"moveID\":\"5\"}",gameResult)
@@ -357,98 +390,100 @@ class ApplicationTest {
     }
 
 
-
-
     //plays the hole game
     @Test
-    fun drawGameTest(){
-        val player1 = 33
-        val player2 = 55
+    fun drawGameTest() {
+        val username = "foo"
+        val username2 = "bar"
+        val password = "123"
+
         //making a game request
-        val reqId = RestAssured.given().basePath("/gameRequests/users/${player1}")
-                .post()
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
-        val gameId = RestAssured.given().basePath("/gameRequest/accept/${player2}/${reqId}")
-                .patch()
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
 
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/0/0/users/${username}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
 
-        //playing game
-        RestAssured.given().basePath("/move/${gameId}/${player1}/0/0")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/0/1/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
 
-        RestAssured.given().basePath("/move/${gameId}/${player2}/0/1")
-                .post()
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/0/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-        RestAssured.given().basePath("/move/${gameId}/${player1}/0/2")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/1/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-
-
-        RestAssured.given().basePath("/move/${gameId}/${player2}/1/2")
-                .post()
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/1/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-
-        RestAssured.given().basePath("/move/${gameId}/${player1}/1/1")
-                .post()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
-
-
-
-        RestAssured.given().basePath("/move/${gameId}/${player2}/2/0")
-                .post()
-                .then()
-                .statusCode(200)
-                .extract().body().asString()
-
-        RestAssured.given().basePath("/move/${gameId}/${player1}/1/0")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/2/0/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
 
-
-        RestAssured.given().basePath("/move/${gameId}/${player2}/2/2")
-                .post()
+        //player 1 does a move
+        RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/1/0/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
-        val gameResult = RestAssured.given().basePath("/move/${gameId}/${player1}/2/1")
-                .post()
+        //player 2 does a move
+        RestAssured.given().auth().basic(username2, password)
+                .post("/move/${gameid}/2/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
+
+
+        //player 1 does a move
+        val gameResult = RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/2/1/users/${username}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString()
+
+
 
         Assert.assertTrue(gameResult.contains("\"gameStatus\":\"3"))
         //Assert.assertEquals( "{\"error\":\"NONE\",\"gameStatus\":\"3\",\"moveID\":\"5\"}",gameResult)
 
     }
-
-
 
 
 }

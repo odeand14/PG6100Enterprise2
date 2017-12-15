@@ -1,5 +1,7 @@
 package no.westerdals.zuul
 
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -8,13 +10,16 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
+@Api(value = "/", description = "Handling the login service")
 @RestController
+@Validated
 class RestApi(
         private val service: UserService,
         private val authenticationManager: AuthenticationManager,
@@ -29,7 +34,7 @@ class RestApi(
         return ResponseEntity.ok(map)
     }
 
-
+    @ApiOperation("Login service")
     @PostMapping(path = arrayOf("/signIn"),
             consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
     fun signIn(@ModelAttribute(name = "the_user") username: String,

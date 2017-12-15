@@ -18,6 +18,7 @@
         <module>frontend</module>
         <module>friendslist</module>
         <module>game</module>
+        <module>e2e</module>
     </modules>
 
     <properties>
@@ -217,6 +218,13 @@
                 <version>${version.testcontainers}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <!-- For handling waiting of asynchronous events -->
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>3.0.0</version>
+                <scope>test</scope>
+            </dependency>
 
         </dependencies>
 
@@ -249,16 +257,16 @@
             <plugins>
 
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                    <inherited>true</inherited>
-                    <configuration>
-                        <source>${version.java}</source>
-                        <target>${version.java}</target>
-                    </configuration>
-                </plugin>
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                    <!--<version>3.1</version>-->
+                    <!--<inherited>true</inherited>-->
+                    <!--<configuration>-->
+                        <!--<source>${version.java}</source>-->
+                        <!--<target>${version.java}</target>-->
+                    <!--</configuration>-->
+                <!--</plugin>-->
 
                 <!-- this is needed to run integration tests -->
                 <plugin>
@@ -469,7 +477,8 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <nodeVersion>v6.9.5</nodeVersion>
+                        <nodeVersion>v8.9.2</nodeVersion>
+                        <npmVersion>5.6.0</npmVersion>
                     </configuration>
                 </plugin>
 
