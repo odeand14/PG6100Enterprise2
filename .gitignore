@@ -8,7 +8,7 @@
 # User-specific stuff:
 /.idea/
 
-.testcontainers
+.testcontainers*
 
 # Gradle:
 .idea/**/gradle.xml
