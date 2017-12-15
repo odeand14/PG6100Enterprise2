@@ -20,6 +20,22 @@ Instead we have focused on creating extensive end-to-end tests to simulate the d
 * System dependencies, none beside Docker and Maven dependencies
 
 
+## How the game works
+
+I was responsible for the game microservice and also the end to end test to sign in and play a game.
+You play the game by first creating a game request. This game request consist of the username of the player creating the game request and the id of the created game request. The id is returned as a response from the game request POST. This ID can then be sent to one of you friends (the idea here was to send the id using the friend-list if we got to implement a chat, or just send it to your friend over other channels like we often do with games like Kahoot).
+Player nr 2 then takes this request id and uses it on a PATCH to update the game request with his or hers username. The game also gets created. (I used PATCH because i do a partial update on the game request, but it also creates a game so it might have been an idea to use post for this). The game id is returned with the PATCH to accept the request, the idea is that player 1 gets this game id by polling it with a GET, preferably with long polling. I did not want to use websockets because the task said we should create one RESTful microservice service each and websockets is not RESTful. 
+
+Now that both have the game id they can start to place pieces on the board. Player 1 always starts and uses a cross piece. A move is posted with the board coordinates to where you want to place a piece, and the user id of the user posting a move. This move is then added to the game-entity. The post to create moves does a lot of checks to validate the input and user so it is not possible for the same user to post twice in a row for instance. 
+Posting a move checks if the game is won and if it is not returns gameStatus 0. This is the default value and means that the game is ongoing. If player 1 is the winner it returns gameStatus: 1 and if player2 wins the gameStaus is 2. 
+
+
+When finishing a game our plan was to inform the scoreboard service that a game is done by sending a message to a message broker (AMQP), however due to our time limits at the end it had to be omitted. We have however tested that the microservices does as they are supposed to, and this is one great thing about microservices. All the modules work, and can be put together anytime, but as it stands it is possible to both register, play game, create a friends list and store highscores. This demonstrates that it is possible to take down parts of a system and still have core functionality running if you have to take down a microservice. 
+
+
+Since i made a bad decision from the start, by using entities as dtos, end to end tests got a bit more complicated. Unfortunately i thought about this a bit too late and did not have time to fix it when making my end to end tests.
+
+
 ## Project report
 Below is a little report on our project
 ### Project structure
