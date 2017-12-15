@@ -22,6 +22,7 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
                 // TODO(reek): This must be redone, because it doesn't match up to the current
                 // URI scheme.
 
+                .antMatchers("/healthz").permitAll()
                 .antMatchers(
                         "/api/gameRequests/user/{id}",
                         "/api/gameRequests/{requestId}/user/{id}",

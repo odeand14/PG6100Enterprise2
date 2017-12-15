@@ -6,18 +6,20 @@ import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
-import no.westerdals.game.dto.GameResponseDto
 import org.awaitility.Awaitility.await
+import org.awaitility.Awaitility.with
+import org.awaitility.pollinterval.FibonacciPollInterval
+import org.awaitility.pollinterval.FibonacciPollInterval.fibonacci
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.contains
 import org.junit.Assert
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
 import org.testcontainers.containers.DockerComposeContainer
 import java.io.File
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.SECONDS
 
 
 class GameIT {
@@ -42,15 +44,16 @@ class GameIT {
             RestAssured.port = 80
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
-
-            await().atMost(300, TimeUnit.SECONDS)
+            with().pollInterval(fibonacci(SECONDS)).await().atMost(300, SECONDS)
                     .ignoreExceptions()
                     .until({
 
                         given().get("http://localhost:80/user").then().statusCode(401)
 
-                        given().get("http://localhost:80/user-service/usersInfo")
-                                .then().statusCode(401)
+                        // TODO(reek): VERY IMPORTANT SWITCH THIS WITH OURS.
+                        given().get("http://localhost:80/game/healtz")
+                                .then().statusCode(200)
+
 
                         true
                     })
@@ -127,14 +130,6 @@ class GameIT {
                 .body("roles", contains("ROLE_USER"))
     }
 
-    @Test
-    fun testForbiddenAccess() {
-        // We test if we can access each of the endpoints.
-        given().basePath("/game/api/")
-                .get("/LOL")
-                .then()
-                .statusCode(403)
-    }
 
     // Utility classes, to reduce boilerplate.
     class TestGameUser(val name: String, val pwd: String, val cookies: NeededCookies)
@@ -178,12 +173,27 @@ class GameIT {
 
     }
 
-    private fun postTestMove(gameId: Long, usr: TestGameUser, x: Long, y:Long) : GameResponseDto {
+    // NB: This is done because we could not get it to build, if we referenced any of the other projects.
+    // We are not proud of this, but a mans got to do, what a mans got to do. There is no pride in winning the battle,
+    // if you lose the build.
+    private data class TestGameResponseDto(
+            var error: String = "",
+            var gameStatus: Long = 0
+    )
+
+    private data class TestGameRequestEntity(
+            var player1username: String = "",
+            var id: Long? = null,
+            var player2username: String? = null,
+            var gameId: Long? = null
+    )
+
+    private fun postTestMove(gameId: Long, usr: TestGameUser, x: Long, y:Long) : TestGameResponseDto {
         return XSRFReq(usr.cookies)
-                .post("/game/api/move/$gameId/$x/$y/users/$usr.name")
+                .post("/game/api/move/${gameId}/${x}/${y}/users/${usr.name}")
                 .then()
                 .statusCode(200)
-                .extract().`as`(GameResponseDto::class.java)
+                .extract().`as`(TestGameResponseDto::class.java)
     }
 
     // This is our test game for a perfecct match, where both players know
@@ -191,6 +201,7 @@ class GameIT {
     // logic in the applicaton works.
     @Test
     fun testPlayAGamePerfect() {
+
         // We will need 2 players for this.
 
         val usr1 = createUniqueId()
@@ -217,6 +228,7 @@ class GameIT {
         val gameResult = postTestMove(gameId, tusr1, 0, 2)
 
         Assert.assertEquals(1, gameResult.gameStatus)
+
     }
 
     // This game rests on polling to simulate how users would play over a website.
@@ -231,6 +243,110 @@ class GameIT {
         val usr2 = createUniqueId()
         val pwd2 = "soap"
         val cok2 = registerUser(usr2,pwd2)
+
+
+        val tusr1 = TestGameUser(usr1, pwd1, cok1)
+        val tusr2 = TestGameUser(usr2, pwd2, cok2)
+
+        // First player 1 creates a game request.
+        val requestId = createTestGameRequest(tusr1)
+
+        // in real life this would go on a loop, but for now, we are just going to call it once, to show that
+        // it is not done yet.
+        val pollResp1 = noXSRFReq(tusr1.cookies)
+                .get("/game/api/gameRequests/${requestId}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .`as`(TestGameRequestEntity::class.java)
+
+        assertNull(pollResp1.gameId)
+
+
+
+        val gameId = acceptTestGameRequest(requestId, tusr2)
+
+        // in real life this would go on a loop, but for now, we are just going to call it once, to show that
+        // it is not done yet.
+        val pollResp2 = noXSRFReq(tusr1.cookies)
+                .get("/game/api/gameRequests/${requestId}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .`as`(TestGameRequestEntity::class.java)
+
+        assertEquals(pollResp2.gameId, gameId)
+
+
+        // we now show a poll step here, but then we don't bother anymore, as the process would only be repeated.
+
+        // First player 2 tries to post, but since he is not allowed, he tries again later.
+        val pollResp3 = XSRFReq(tusr2.cookies)
+                .post("/game/api/move/${gameId}/1/1/users/${tusr2.name}")
+                .then()
+                .statusCode(400)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp3.error,"Player 1 must make the first move")
+
+        // player 1 makes the actuall move.
+
+        //player 1 does a move against where he played last, because if it is equal to same user can't post twice,
+        // we know that player 2 hasn't posted.
+        postTestMove(gameId, tusr1, 0, 0)
+
+        val pollResp4 = XSRFReq(tusr1.cookies)
+                .post("/game/api/move/${gameId}/0/0/users/${tusr1.name}")
+                .then()
+                .statusCode(409)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp4.error, "same user cant post twice")
+
+
+        // now player 2 checks again, and this time he succeds. He does the same as player 1 to poll.
+        postTestMove(gameId, tusr2, 1, 1)
+
+        val pollResp5 = XSRFReq(tusr2.cookies)
+                .post("/game/api/move/${gameId}/1/1/users/${tusr2.name}")
+                .then()
+                .statusCode(409)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp5.error, "same user cant post twice")
+
+        // player 1 now does the push against previous coordinates again. This time the error is placed before, so now
+        // he know he can place a piece.
+        val pollResp6 = XSRFReq(tusr1.cookies)
+                .post("/game/api/move/${gameId}/0/0/users/${tusr1.name}")
+                .then()
+                .statusCode(409)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp4.error, "scoordinates already used")
+
+        // Player 1 now makes the original move. This process is repeated until game is over.
+        postTestMove(gameId, tusr1, 0, 1)
+        postTestMove(gameId, tusr2, 1, 2)
+
+        val gameResult = postTestMove(gameId, tusr1, 0, 2)
+
+        assertEquals(1, gameResult.gameStatus)
+
+        // lastley player 2 pushes against his last move, but now he gets game finished.
+
+        val pollResp9 = XSRFReq(tusr2.cookies)
+                .post("/game/api/move/${gameId}/1/2/users/${tusr2.name}")
+                .then()
+                .statusCode(406)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp9.error, "Game is finished")
     }
 
     // This is a messy game, where the players post in wrong order and such.

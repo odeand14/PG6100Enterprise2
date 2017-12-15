@@ -31,6 +31,13 @@ class RestApi(
     return ResponseEntity.ok(session.attributeNames.toList().joinToString(" "))
     }*/
 
+    @ApiOperation("A health check")
+    @GetMapping("/healthz")
+    @ApiResponse(code = 200, message = "The literal string '<3'")
+    fun getHealthz() : ResponseEntity<String> {
+        return ResponseEntity.ok("<3")
+    }
+
 
     @ApiOperation("Gets a game request by id")
     @GetMapping("/api/gameRequests/{id}")
@@ -76,6 +83,9 @@ class RestApi(
         println("##########" + requestEntity.player1username + requestEntity.player2username)
 
         val gameId = gamecrud.createGame(requestEntity.player1username, requestEntity.player2username!!)
+        foundRequest.gameId = gameId
+        requestcrud.save(foundRequest)
+
         return ResponseEntity.ok(gameId)
     }
 
@@ -131,6 +141,12 @@ class RestApi(
             return ResponseEntity.ok(GameResponseDto("", 0))
         }
 
+        val lastPlayerId = movelist.last().playerusername
+        if (playerusername == lastPlayerId) {
+            return ResponseEntity.status(409).body(GameResponseDto("same user cant post twice", 0))
+        }
+
+
         //TODO: bad perf
         for (entity in movelist) {
             if ((entity.x == xcoord) && (entity.y == ycoord)) {
@@ -139,10 +155,6 @@ class RestApi(
         }
 
 
-        val lastPlayerId = movelist.last().playerusername
-        if (playerusername == lastPlayerId) {
-            return ResponseEntity.status(409).body(GameResponseDto("same user cant post twice", 0))
-        }
 
 
         val moveId = movescrud.createMove(gameid, playerusername, xcoord, ycoord)

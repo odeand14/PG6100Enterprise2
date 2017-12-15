@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-
+import org.junit.Assert.*
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,6 +42,15 @@ class ApplicationTest {
 
     }
 
+    @Test
+    fun testHealthz() {
+        val res = RestAssured.given()
+                .basePath("/")
+                .get("/healthz")
+                .then()
+                .statusCode(200).extract().body().asString()
+        assertEquals(res, "<3")
+    }
 
     @Test
     fun createGameRequestTest() {
@@ -234,8 +243,8 @@ class ApplicationTest {
 
 
         //player 1 does a move
-        val respons = RestAssured.given().auth().basic(username2, password)
-                .post("/move/${gameid}/3/4/users/${username2}")
+        val respons = RestAssured.given().auth().basic(username, password)
+                .post("/move/${gameid}/3/4/users/${username}")
                 .then()
                 .statusCode(400)
                 .extract().`as`(GameResponseDto::class.java)

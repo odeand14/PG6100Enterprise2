@@ -42,7 +42,8 @@ class Application {
     @Bean(name = arrayOf("OBJECT_MAPPER_BEAN"))
     fun jsonObjectMapper(): ObjectMapper {
         return Jackson2ObjectMapperBuilder.json()
-                .serializationInclusion(JsonInclude.Include.NON_NULL)
+                // We want nulls.
+                //.serializationInclusion(JsonInclude.Include.NON_NULL)
 
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) //ISODate
                 .modules(JavaTimeModule())
