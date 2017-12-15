@@ -18,7 +18,7 @@
         <module>frontend</module>
         <module>friendslist</module>
         <module>game</module>
-        <module>endtoendtests</module>
+        <module>e2e</module>
     </modules>
 
     <properties>
