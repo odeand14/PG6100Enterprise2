@@ -60,6 +60,9 @@ services:
   scorepostgres:
     image: "postgres:10"
 
+  friendslistpostgres:
+    image: "postgres:10"
+
   postgres:
     image: "postgres:10"
 
