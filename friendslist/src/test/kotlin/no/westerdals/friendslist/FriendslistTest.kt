@@ -1,5 +1,6 @@
 package no.westerdals.friendslist
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
 import io.restassured.RestAssured.*
 import io.restassured.http.ContentType
@@ -33,21 +34,25 @@ class FriendslistTest {
         crud.deleteAll()
     }
 
-    @Test
-    fun testInvalidFriendID() {
-        given().basePath("/123123").auth().basic("admin","admin")
-                .get()
-                .then()
-                .statusCode(404)
-    }
-
-    @Test
-    fun testGetFriendsCount() {
-        val count = given().basePath("/friendslistCount").auth().basic("admin","admin")
+    private fun countFriends(): Int {
+        return given().basePath("/friendslistCount").auth().basic("admin","admin")
                 .get()
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toInt()
+    }
+
+    @Test
+    fun testUnauthedRequest() {
+        given().basePath("/")
+                .get()
+                .then()
+                .statusCode(401)
+    }
+
+    @Test
+    fun testGetFriendsCount() {
+        val count = countFriends()
 
         assertEquals(0, count)
     }
@@ -62,66 +67,50 @@ class FriendslistTest {
                 .body(equalTo("[]"))
     }
 
-    private fun getFriends(n: Int){
-        val response = given().basePath("/friendslist").auth().basic("admin","admin")
-                .accept(ContentType.JSON)
-                .get()
+    private fun createDummyFriend(user: String, pass: String): Array<Int?> {
+        val dto = FriendslistEntity(null,1,2,"2017-12-14T20:03:12")
+
+        val response = given().basePath("").auth().basic(user, pass)
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .post()
                 .then()
                 .extract()
-        val statusCode = response.statusCode()
-        val body = response.body()
-        if (statusCode == 200) {
-            assertEquals(n, arrayOf(body).size)
-        } else {
-            assertEquals(n, 0)
+        val jackson = ObjectMapper()
+        val friend = try {
+            jackson.readValue(response.body().asString(), FriendslistEntity::class.java)
+        } catch (e: Exception) {
+            null
         }
+
+        return arrayOf(response.statusCode(), friend?.id)
     }
 
     @Test
     fun testUnAuthorizedFriendCreate() {
-
-        getFriends(0)
-
-        val dto = FriendslistEntity("1",1,2,"2017-12-14T20:03:12")
-
-        given().basePath("/friendslist/").auth().basic("un","authed")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .post()
-                .then()
-                .statusCode(401)
-
-        getFriends(0)
+        val friendsBeforeInsert = countFriends()
+        assertEquals(401, createDummyFriend("un", "authed")[0])
+        assertEquals(friendsBeforeInsert, countFriends())
     }
 
     @Test
     fun testCreateFriend() {
-
-        getFriends(0)
-
-        val dto = FriendslistEntity("",1,2,"2017-12-14T20:03:12")
-
-        given().basePath("/friendslist/").auth().basic("admin","admin")
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .post()
-                .then()
-                .statusCode(201)
-
-        getFriends(1)
+        val friendsBeforeInsert = countFriends()
+        assertEquals(200, createDummyFriend("admin", "admin")[0])
+        assertEquals(friendsBeforeInsert + 1, countFriends())
     }
 
     @Test
     fun testDeleteFriend() {
+        val friendId = createDummyFriend("admin", "admin")[1]
+        val friendsBeforeDelete = countFriends()
 
-        getFriends(1)
-
-        given().basePath("/friendslist/1").auth().basic("admin","admin")
+        given().basePath("/${friendId}").auth().basic("admin","admin")
                 .contentType(ContentType.JSON)
                 .delete()
                 .then()
-                .statusCode(401)
+                .statusCode(204)
 
-        getFriends(0)
+        assertEquals(friendsBeforeDelete - 1, countFriends())
     }
 }

@@ -15,7 +15,7 @@ interface FriendslistRepository : CrudRepository<FriendslistEntity, String>
 
 @RestController
 class RestApi(
-        private val crud: FriendslistRepository
+        private val crud: FriendslistEntityRepository
 ) {
 
     @ApiOperation("Get all friends")
@@ -40,9 +40,9 @@ class RestApi(
     @GetMapping(path = arrayOf("/{friendId}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getOneFriend(@ApiParam("Id of a friend")
-            @PathVariable friendId: String?): ResponseEntity<FriendslistEntity>? {
+            @PathVariable friendId: Long): ResponseEntity<FriendslistEntity>? {
 
-        val response = crud.findOne(friendId)
+        val response = crud.findOneById(friendId)
                 ?: return ResponseEntity.status(404).build()
 
         return ResponseEntity.ok(response)
@@ -51,8 +51,10 @@ class RestApi(
     @ApiOperation("Add a friend")
     @ApiResponse(code = 200, message = "The created Friendslist object")
     @PostMapping(path = arrayOf("/"),
+            consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun addFriend(@RequestBody json: String?): ResponseEntity<String>? {
+    fun addFriend(@ApiParam("User id and friend id")
+            @RequestBody json: String?): ResponseEntity<String>? {
 
         val jackson = ObjectMapper()
 
@@ -72,22 +74,12 @@ class RestApi(
     @DeleteMapping(path = arrayOf("/{friendId}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun removeFriend(@ApiParam("Id of a friend")
-            @PathVariable friendId: String?): ResponseEntity.BodyBuilder {
+            @PathVariable friendId: Int): ResponseEntity<Void> {
 
-        val index = crud.findOne(friendId)
+        val statusCode = if (crud.existsFriend(friendId)) 204 else 404
+        crud.deleteFriend(friendId)
 
-        val statusCode = if (crud.exists(index.toString())) 204 else 404
-
-        return ResponseEntity.status(statusCode)
+        return ResponseEntity.status(statusCode).build()
     }
 
 }
-
-
-
-
-
-
-
-
-

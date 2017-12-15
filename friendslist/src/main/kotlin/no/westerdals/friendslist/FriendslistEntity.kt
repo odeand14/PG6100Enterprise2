@@ -12,7 +12,7 @@ class FriendslistEntity(
     @ApiModelProperty("Id of the entry")
     @get:Id
     @get:GeneratedValue
-    var id: String,
+    var id: Int? = null,
 
     @ApiModelProperty("Id of the user")
     var userId: Int?,
