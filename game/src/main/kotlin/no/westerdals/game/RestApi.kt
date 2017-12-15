@@ -1,12 +1,16 @@
 package no.westerdals.game
 
 
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpSession
 
+@Api(value = "/game", description = "Handling creating game requests and playing a game")
 
 @RestController
 class RestApi(
@@ -15,7 +19,7 @@ class RestApi(
         private val requestcrud: GameRequestRepository
 
 ) {
-
+/**
     //TODO: ONLY FOR DEBUGGING PURPOSES, REMEMBER TO REMOVE
     @GetMapping("/api/test")
     fun getTest(session: HttpSession): ResponseEntity<String> {
@@ -25,16 +29,23 @@ class RestApi(
         val aa = SecurityContextHolder.getContext().authentication
 
         return ResponseEntity.ok(session.attributeNames.toList().joinToString(" "))
-    }
+    }*/
 
+
+    @ApiOperation("Gets a game request by id")
     @GetMapping("/api/gameRequests/{id}")
-    fun getGameRequest(@PathVariable id: Long): ResponseEntity<GameRequestEntity> {
+    fun getGameRequest(
+        @ApiParam("Gamerequest id")
+        @PathVariable id: Long): ResponseEntity<GameRequestEntity> {
         return ResponseEntity.ok(requestcrud.findOneById(id))
     }
 
 
-    @PostMapping("/api/user/{playerid}/gameRequests")
-    fun createGameRequest(@PathVariable playerid: String): ResponseEntity<Long> {
+    @ApiOperation("Creates a game request that can be joined by the id returned")
+    @PostMapping("/api/gameRequests/user/{playerid}")
+    fun createGameRequest(
+            @ApiParam("Id of the player making the gamerequest")
+            @PathVariable playerid: String): ResponseEntity<Long> {
         //  val aa = SecurityContextHolder.getContext().authentication
         val reQuestid = requestcrud.createRequest(playerid)
 
@@ -42,8 +53,14 @@ class RestApi(
     }
 
 
-    @PatchMapping("/api/user/{playerid}/gameRequest/accept/{reqid}")
-    fun acceptGameRequest(@PathVariable playerid: String, @PathVariable reqid: Long): ResponseEntity<Long> {
+    @ApiOperation("Patches a game request by requestid and player2id so that a game can be created")
+    @PatchMapping("/api/gameRequests/{reqid}/user/{playerid}")
+    fun acceptGameRequest(
+            @ApiParam("Id of the player accepting the gamerequest.")
+            @PathVariable playerid: String,
+
+            @ApiParam("Id of the gamerequest to accept")
+            @PathVariable reqid: Long): ResponseEntity<Long> {
 
 
         val foundRequest = requestcrud.findOneById(reqid) ?: return ResponseEntity.notFound().build()
@@ -59,26 +76,31 @@ class RestApi(
         return ResponseEntity.ok(valium)
     }
 
-    @GetMapping("/api/game/{id}")
-    fun getGamess(@PathVariable id: Long): ResponseEntity<GameEntity> {
+    @ApiOperation("Gets a game by id")
+    @GetMapping("/api/games/{id}")
+    fun getGamess(
+            @ApiParam("Id of the game you want")
+            @PathVariable id: Long): ResponseEntity<GameEntity> {
 
         return ResponseEntity.ok(gamecrud.findOneByGameId(id))
     }
 
-    /**
-    @PostMapping("/gameRequests/users/{id}")
-    fun createGameRequest(@PathVariable id: Long) : Long {
 
-    val reQuestid = requestcrud.createRequest(id)
-
-    return reQuestid
-    }
-     */
-
-
-    @PostMapping("/api/users/{playerusername}/move/{gameid}/{xcoord}/{ycoord}",
+    @ApiOperation("Posts a move on the gameboard by gameid x and y coordinates, and userid")
+    @PostMapping("/api/move/{gameid}/{xcoord}/{ycoord}/users/{playerusername}",
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun postMove(@PathVariable playerusername: String, @PathVariable gameid: Long, @PathVariable xcoord: Int, @PathVariable ycoord: Int): ResponseEntity<Map<String, String>> {
+    fun postMove(
+            @ApiParam("Username of the user posting a game move")
+            @PathVariable playerusername: String,
+
+            @ApiParam("Id of the game to post move to")
+            @PathVariable gameid: Long,
+
+            @ApiParam("X coordinate on the board")
+            @PathVariable xcoord: Int,
+
+            @ApiParam("Y coordinate on the")
+            @PathVariable ycoord: Int): ResponseEntity<Map<String, String>> {
 
         // val playerusername = playerid
 
@@ -173,17 +195,6 @@ class RestApi(
     }
 
 
-    @GetMapping("/game")
-    fun getGame(): String {
-
-        return "Gametest"
-    }
-
-    @GetMapping("/")
-    fun gameRoot(): String {
-
-        return "gameroot"
-    }
 
 
 }

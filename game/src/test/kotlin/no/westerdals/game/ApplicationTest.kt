@@ -51,7 +51,7 @@ class ApplicationTest {
 
         //Making game request
         val id = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -80,14 +80,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val id = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -103,14 +103,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val id = RestAssured.given().auth().basic(username, password)
-                .patch("/user/${username}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username}")
                 .then()
                 .statusCode(409)
                 .extract().body().asString()
@@ -126,7 +126,7 @@ class ApplicationTest {
 
         //accepting the game request with no request
         val id = RestAssured.given().auth().basic(username, password)
-                .patch("/user/${username}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username}")
                 .then()
                 .statusCode(404)
                 .extract().body().asString()
@@ -139,7 +139,7 @@ class ApplicationTest {
         val password = "123"
 
         val requestRes = RestAssured.given().auth().basic(username, password)
-                .post("users/3/move/4/0/0")
+                .post("/move/4/0/0/users/3")
                 .then()
                 .statusCode(404)
                 .extract().body().asString()
@@ -156,14 +156,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val gameid = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -171,7 +171,7 @@ class ApplicationTest {
 
         //player 1 does a move
         val respons = RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username}/move/${gameid}/0/1")
+                .post("/move/${gameid}/0/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -188,14 +188,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val gameid = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -203,7 +203,7 @@ class ApplicationTest {
 
         //player 1 does a move
         val respons = RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username}/move/${gameid}/3/4")
+                .post("/move/${gameid}/3/4/users/${username}")
                 .then()
                 .statusCode(400)
                 .extract().body().asString()
@@ -220,14 +220,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val gameid = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -235,14 +235,14 @@ class ApplicationTest {
 
         //player 1 does a move
         val respons = RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/1/1")
+                .post("/move/${gameid}/1/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         val respons2 = RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username}/move/${gameid}/1/1")
+                .post("/move/${gameid}/1/1/users/${username}")
                 .then()
                 .statusCode(409)
                 .extract().body().asString()
@@ -260,14 +260,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val gameid = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -275,14 +275,14 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/0/0")
+                .post("/move/${gameid}/0/0/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/1/1")
+                .post("/move/${gameid}/1/1/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -290,14 +290,14 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/0/1")
+                .post("/move/${gameid}/0/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/1/2")
+                .post("/move/${gameid}/1/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -305,7 +305,7 @@ class ApplicationTest {
 
         //player 1 does a move
         val gameResult = RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/0/2")
+                .post("/move/${gameid}/0/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -325,14 +325,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val gameid = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -340,14 +340,14 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/0/0")
+                .post("/move/${gameid}/0/0/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/2/0")
+                .post("/move/${gameid}/2/0/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -355,28 +355,28 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/2/2")
+                .post("/move/${gameid}/2/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/1/1")
+                .post("/move/${gameid}/1/1/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/1/2")
+                .post("/move/${gameid}/1/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         val gameResult = RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/0/2")
+                .post("/move/${gameid}/0/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -399,14 +399,14 @@ class ApplicationTest {
 
         //making a game request
         val requestId = RestAssured.given().auth().basic(username, password)
-                .post("/user/${username}/gameRequests")
+                .post("/gameRequests/user/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
 
         //accepting the game request
         val gameid = RestAssured.given().auth().basic(username2, password)
-                .patch("/user/${username2}/gameRequest/accept/${requestId}")
+                .patch("/gameRequests/${requestId}/user/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString().toLong()
@@ -414,14 +414,14 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/0/0")
+                .post("/move/${gameid}/0/0/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/0/1")
+                .post("/move/${gameid}/0/1/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -429,28 +429,28 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/0/2")
+                .post("/move/${gameid}/0/2/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/1/2")
+                .post("/move/${gameid}/1/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/1/1")
+                .post("/move/${gameid}/1/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/2/0")
+                .post("/move/${gameid}/2/0/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -458,14 +458,14 @@ class ApplicationTest {
 
         //player 1 does a move
         RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/1/0")
+                .post("/move/${gameid}/1/0/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
 
         //player 2 does a move
         RestAssured.given().auth().basic(username2, password)
-                .post("/users/${username2}/move/${gameid}/2/2")
+                .post("/move/${gameid}/2/2/users/${username2}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()
@@ -473,7 +473,7 @@ class ApplicationTest {
 
         //player 1 does a move
         val gameResult = RestAssured.given().auth().basic(username, password)
-                .post("/users/${username}/move/${gameid}/2/1")
+                .post("/move/${gameid}/2/1/users/${username}")
                 .then()
                 .statusCode(200)
                 .extract().body().asString()

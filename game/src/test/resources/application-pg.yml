@@ -1,7 +1,3 @@
-# Note: not specifying
-# "spring.datasource.url"
-# here, as it dynamically depends on TestContainer.
-# So it will be set at runtime directly in the tests.
 
 spring:
   datasource:
