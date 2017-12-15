@@ -14,11 +14,11 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
         http.httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/friendslist/**").hasRole("USER")
+                .antMatchers("/**")
+                .permitAll()
+//                .hasRole("USER")
                 .anyRequest().denyAll()
                 .and()
                 .csrf().disable()
     }
 }
-

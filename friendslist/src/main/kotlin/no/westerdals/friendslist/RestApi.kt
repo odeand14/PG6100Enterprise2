@@ -22,9 +22,15 @@ class RestApi(
         return ResponseEntity.ok(crud.findAll().toList())
     }
 
+    @GetMapping(path = arrayOf("/friendslistCount"),
+            produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+    fun getAllFriendsCount(): ResponseEntity<Long> {
+        return ResponseEntity.ok(crud.count())
+    }
+
     @GetMapping(path = arrayOf("/{friendId}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun getOneFriend(@PathVariable friendId: String?): ResponseEntity<FriendslistEntity> {
+    fun getOneFriend(@PathVariable friendId: String?): ResponseEntity<FriendslistEntity>? {
 
         val response = crud.findOne(friendId)
                 ?: return ResponseEntity.status(404).build()
@@ -34,7 +40,7 @@ class RestApi(
 
     @PostMapping(path = arrayOf("/"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun addFriend(@RequestBody json: String?): ResponseEntity<FriendslistEntity>? {
+    fun addFriend(@RequestBody json: String?): ResponseEntity<String>? {
 
         val jackson = ObjectMapper()
 
@@ -46,7 +52,7 @@ class RestApi(
             return null
         }
 
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ok(jackson.writeValueAsString(response))
     }
 
     @DeleteMapping(path = arrayOf("/{friendId}"),

@@ -2,18 +2,18 @@ package no.westerdals.friendslist
 
 import org.hibernate.validator.constraints.NotBlank
 import javax.persistence.Entity
+import javax.persistence.GeneratedValue
 import javax.persistence.Id
 
 @Entity
 class FriendslistEntity(
 
     @get:Id
-    var id: Long?,
+    @get:GeneratedValue
+    var id: String,
 
-    @NotBlank
     var userId: Int?,
 
-    @NotBlank
     var friendId: Int?,
 
     @NotBlank
