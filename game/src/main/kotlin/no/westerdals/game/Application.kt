@@ -33,7 +33,7 @@ class Application {
     private fun apiInfo(): ApiInfo {
         return ApiInfoBuilder()
                 .title("API for Tic Tac Toe game")
-                .description("simple turnbased 2player tic tac toe on a 3x3 grid")
+                .description("simple turnbased 2-player tic tac toe on a 3x3 grid")
                 .version("1.0")
                 .build()
     }
