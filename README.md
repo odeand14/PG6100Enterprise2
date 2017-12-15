@@ -23,13 +23,13 @@ Instead we have focused on creating extensive end-to-end tests to simulate the d
 ## Project report
 Below is a little report on our project
 ### Project structure
-The project is structured so that all modules are on the same level, directly below the root-folder. All the modules have their own Dockerfile and necessary kotlin/spring/other files, depending on their needs. There
-
-
-
+The project is structured so that all modules are on the same level, directly below the root-folder. All the modules have their own Dockerfile and necessary kotlin/spring/other files, depending on their needs.
+### Testing and technologies
+We have mainly focused on trying to get good coverage with our tests here, also on trying modules together with end to end tests. It has been a most entertaining/frustrating/useful experience, working with microservices in docker containers, along with Zuul, Redis, Eureka, Swagger and more. We have found that it is not easy getting everything to communicate correctly especially with Zuul to consider. However, we are positively surprised by swagger. It was a most useful and powerful documentation tool which we are sure to see again.
 ### Comments
+We experienced some difficulties on the way to understanding how it all worked together, and making the modules communicate correctly with zuul as the concerned mother watching after her microservices.
 
-### Collaborators and their modules
+## Collaborators and their modules
 * **Andreas Waadeland - github: xIntern**
 
 Has worked on the *friendslist* module and everything related to that
