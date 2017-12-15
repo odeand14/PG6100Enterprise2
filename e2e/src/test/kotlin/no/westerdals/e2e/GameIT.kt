@@ -5,17 +5,21 @@ package no.westerdals.e2e
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
+import io.restassured.specification.RequestSpecification
 import org.awaitility.Awaitility.await
+import org.awaitility.Awaitility.with
+import org.awaitility.pollinterval.FibonacciPollInterval
+import org.awaitility.pollinterval.FibonacciPollInterval.fibonacci
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.contains
 import org.junit.Assert
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
 import org.testcontainers.containers.DockerComposeContainer
 import java.io.File
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.SECONDS
 
 
 class GameIT {
@@ -40,15 +44,16 @@ class GameIT {
             RestAssured.port = 80
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
-
-            await().atMost(300, TimeUnit.SECONDS)
+            with().pollInterval(fibonacci(SECONDS)).await().atMost(300, SECONDS)
                     .ignoreExceptions()
                     .until({
 
                         given().get("http://localhost:80/user").then().statusCode(401)
 
-                        given().get("http://localhost:80/user-service/usersInfo")
-                                .then().statusCode(401)
+                        // TODO(reek): VERY IMPORTANT SWITCH THIS WITH OURS.
+                        given().get("http://localhost:80/game/healthz")
+                                .then().statusCode(200)
+
 
                         true
                     })
@@ -124,6 +129,286 @@ class GameIT {
                 .body("name", equalTo(id))
                 .body("roles", contains("ROLE_USER"))
     }
+
+
+    // Utility classes, to reduce boilerplate.
+    class TestGameUser(val name: String, val pwd: String, val cookies: NeededCookies)
+
+
+    private fun noXSRFReq(cookies : NeededCookies) : RequestSpecification {
+        return given().cookie("SESSION", cookies.session)
+    }
+
+    private fun XSRFReq(cookies : NeededCookies) : RequestSpecification {
+        return noXSRFReq(cookies)
+                .cookie("XSRF-TOKEN", cookies.csrf)
+                .header("X-XSRF-TOKEN", cookies.csrf)
+    }
+
+
+    private fun createTestGameRequest(usr1 : TestGameUser) : Long {
+        //making a game request
+        return XSRFReq(usr1.cookies)
+                .post("/game/api/gameRequests/user/${usr1.name}")
+                .then()
+                .statusCode(201)
+                .extract().body().asString().toLong()
+    }
+
+    private fun acceptTestGameRequest(requestId : Long, usr2 : TestGameUser) : Long {
+        //accepting the game request
+        return XSRFReq(usr2.cookies)
+                .patch("/game/api/gameRequests/${requestId}/user/${usr2.name}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+    }
+
+    private fun createTestGame(usr1 : TestGameUser, usr2 : TestGameUser) : Long {
+
+        val requestId = createTestGameRequest(usr1)
+        val gameId = acceptTestGameRequest(requestId, usr2)
+
+        return gameId
+
+    }
+
+    // NB: This is done because we could not get it to build, if we referenced any of the other projects.
+    // We are not proud of this, but a mans got to do, what a mans got to do. There is no pride in winning the battle,
+    // if you lose the build.
+    private data class TestGameResponseDto(
+            var error: String = "",
+            var gameStatus: Long = 0
+    )
+
+    private data class TestGameRequestEntity(
+            var player1username: String = "",
+            var id: Long? = null,
+            var player2username: String? = null,
+            var gameId: Long? = null
+    )
+
+    private fun postTestMove(gameId: Long, usr: TestGameUser, x: Long, y:Long) : TestGameResponseDto {
+        return XSRFReq(usr.cookies)
+                .post("/game/api/move/${gameId}/${x}/${y}/users/${usr.name}")
+                .then()
+                .statusCode(200)
+                .extract().`as`(TestGameResponseDto::class.java)
+    }
+
+    // This is our test game for a perfecct match, where both players know
+    // everything about the game state. This way we can test that just the
+    // logic in the applicaton works.
+    @Test
+    fun testPlayAGamePerfect() {
+
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+
+        val tusr1 = TestGameUser(usr1, pwd1, cok1)
+        val tusr2 = TestGameUser(usr2, pwd2, cok2)
+
+        val gameId = createTestGame(tusr1, tusr2)
+
+
+        //player 1 does a move
+        postTestMove(gameId, tusr1, 0, 0)
+        postTestMove(gameId, tusr2, 1, 1)
+        postTestMove(gameId, tusr1, 0, 1)
+        postTestMove(gameId, tusr2, 1, 2)
+
+        val gameResult = postTestMove(gameId, tusr1, 0, 2)
+
+        Assert.assertEquals(1, gameResult.gameStatus)
+
+    }
+
+    // This game rests on polling to simulate how users would play over a website.
+    @Test
+    fun testPlayAGamePoll() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+
+        val tusr1 = TestGameUser(usr1, pwd1, cok1)
+        val tusr2 = TestGameUser(usr2, pwd2, cok2)
+
+        // First player 1 creates a game request.
+        val requestId = createTestGameRequest(tusr1)
+
+        // in real life this would go on a loop, but for now, we are just going to call it once, to show that
+        // it is not done yet.
+        val pollResp1 = noXSRFReq(tusr1.cookies)
+                .get("/game/api/gameRequests/${requestId}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .`as`(TestGameRequestEntity::class.java)
+
+        assertNull(pollResp1.gameId)
+
+
+
+        val gameId = acceptTestGameRequest(requestId, tusr2)
+
+        // in real life this would go on a loop, but for now, we are just going to call it once, to show that
+        // it is not done yet.
+        val pollResp2 = noXSRFReq(tusr1.cookies)
+                .get("/game/api/gameRequests/${requestId}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .`as`(TestGameRequestEntity::class.java)
+
+        assertEquals(pollResp2.gameId, gameId)
+
+
+        // we now show a poll step here, but then we don't bother anymore, as the process would only be repeated.
+
+        // First player 2 tries to post, but since he is not allowed, he tries again later.
+        val pollResp3 = XSRFReq(tusr2.cookies)
+                .post("/game/api/move/${gameId}/1/1/users/${tusr2.name}")
+                .then()
+                .statusCode(400)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp3.error,"Player 1 must make the first move")
+
+        // player 1 makes the actuall move.
+
+        //player 1 does a move against where he played last, because if it is equal to same user can't post twice,
+        // we know that player 2 hasn't posted.
+        postTestMove(gameId, tusr1, 0, 0)
+
+        val pollResp4 = XSRFReq(tusr1.cookies)
+                .post("/game/api/move/${gameId}/0/0/users/${tusr1.name}")
+                .then()
+                .statusCode(409)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp4.error, "same user cant post twice")
+
+
+        // now player 2 checks again, and this time he succeds. He does the same as player 1 to poll.
+        postTestMove(gameId, tusr2, 1, 1)
+
+        val pollResp5 = XSRFReq(tusr2.cookies)
+                .post("/game/api/move/${gameId}/1/1/users/${tusr2.name}")
+                .then()
+                .statusCode(409)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp5.error, "same user cant post twice")
+
+        // player 1 now does the push against previous coordinates again. This time the error is placed before, so now
+        // he know he can place a piece.
+        val pollResp6 = XSRFReq(tusr1.cookies)
+                .post("/game/api/move/${gameId}/0/0/users/${tusr1.name}")
+                .then()
+                .statusCode(409)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp6.error, "coordinates already used")
+
+        // Player 1 now makes the original move. This process is repeated until game is over.
+        postTestMove(gameId, tusr1, 0, 1)
+        postTestMove(gameId, tusr2, 1, 2)
+
+        val gameResult = postTestMove(gameId, tusr1, 0, 2)
+
+        assertEquals(1, gameResult.gameStatus)
+
+        // lastley player 2 pushes against his last move, but now he gets game finished.
+
+        val pollResp9 = XSRFReq(tusr2.cookies)
+                .post("/game/api/move/${gameId}/1/2/users/${tusr2.name}")
+                .then()
+                .statusCode(406)
+                .extract()
+                .`as`(TestGameResponseDto::class.java)
+
+        assertEquals(pollResp9.error, "Game is finished")
+    }
+
+    // This is a messy game, where the players post in wrong order and such.
+    // it should still ultimatly work, but it will test our error system.
+    @Test
+    fun testPlayAGameMessy() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+    }
+
+    // This test attempts to reproduce as many ways as possible for one of the
+    // parties to attempt to cheat. In our enterpriiiissssseeeee app this is ofcurse
+    // not possible, but we should still make the effort to check.
+    @Test
+    fun testPlayAGameCheaty() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+
+
+    }
+
+    // THis is a test for a 3rd party trying to post moves,
+    // posting as someone else. This is really quite similar to the
+    // cheating example, but as this might change in the future, and
+    // this involves a 3rd party, we will try to fix it.
+    @Test
+    fun testPlayAGameTheify() {
+        // We will need 3 players for this.
+
+
+        // Brb
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+        val usr3 = createUniqueId()
+        val pwd3 = "cry"
+        val cok3 = registerUser(usr3,pwd3)
+
+    }
+
+    // NOT OUR TESTS.
+
 
     @Test
     fun testOpenCount(){
