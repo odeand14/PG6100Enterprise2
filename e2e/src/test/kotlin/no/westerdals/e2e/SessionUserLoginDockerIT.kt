@@ -8,6 +8,7 @@ import io.restassured.http.ContentType
 import org.awaitility.Awaitility.await
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.contains
+import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -27,6 +28,7 @@ class DistributedSessionDockerIT {
         @ClassRule
         @JvmField
         val env = KDockerComposeContainer(File("../docker-compose.yml"))
+                .withExposedService("eureka", 8761)
                 .withLocalCompose(true)
 
         private var counter = System.currentTimeMillis()
@@ -39,7 +41,7 @@ class DistributedSessionDockerIT {
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
 
-            await().atMost(60, TimeUnit.SECONDS)
+            await().atMost(300, TimeUnit.SECONDS)
                     .ignoreExceptions()
                     .until({
 
@@ -240,12 +242,13 @@ class DistributedSessionDockerIT {
                 .statusCode(201)
 
 
-        given().cookie("SESSION", cookies.session)
+        var count = given().cookie("SESSION", cookies.session)
                 .accept(ContentType.JSON)
                 .get("/highscore/highscoresCount")
                 .then()
                 .statusCode(200)
-                .body(equalTo(0))
+                .extract().body().asString().toInt()
 
+        Assert.assertEquals(0, count)
     }
 }
