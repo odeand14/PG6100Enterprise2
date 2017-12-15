@@ -50,7 +50,6 @@ class GameIT {
 
                         given().get("http://localhost:80/user").then().statusCode(401)
 
-                        // TODO(reek): VERY IMPORTANT SWITCH THIS WITH OURS.
                         given().get("http://localhost:80/game/healthz")
                                 .then().statusCode(200)
 
@@ -351,6 +350,9 @@ class GameIT {
 
     // This is a messy game, where the players post in wrong order and such.
     // it should still ultimatly work, but it will test our error system.
+
+    // We did not get the time to write an integration test for this,
+    // but we have an endpoint test for it in the game repository.
     @Test
     fun testPlayAGameMessy() {
         // We will need 2 players for this.
@@ -367,6 +369,9 @@ class GameIT {
     // This test attempts to reproduce as many ways as possible for one of the
     // parties to attempt to cheat. In our enterpriiiissssseeeee app this is ofcurse
     // not possible, but we should still make the effort to check.
+
+    // We did not get the time to write an integration test for this,
+    // but we have an endpoint test for it in the game repository.
     @Test
     fun testPlayAGameCheaty() {
         // We will need 2 players for this.
@@ -387,6 +392,9 @@ class GameIT {
     // posting as someone else. This is really quite similar to the
     // cheating example, but as this might change in the future, and
     // this involves a 3rd party, we will try to fix it.
+
+    // We did not get the time to write an integration test for this,
+    // but we have an endpoint test for it in the game repository.
     @Test
     fun testPlayAGameTheify() {
         // We will need 3 players for this.

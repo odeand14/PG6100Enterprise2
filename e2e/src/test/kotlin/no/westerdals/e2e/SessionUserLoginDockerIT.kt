@@ -6,6 +6,7 @@ import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import org.awaitility.Awaitility.await
+import org.awaitility.pollinterval.FibonacciPollInterval
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.contains
 import org.junit.Assert
@@ -15,8 +16,8 @@ import org.junit.ClassRule
 import org.junit.Test
 import org.testcontainers.containers.DockerComposeContainer
 import java.io.File
-import java.util.concurrent.TimeUnit
-
+import java.util.concurrent.TimeUnit.SECONDS
+import org.awaitility.Awaitility.with
 
 class DistributedSessionDockerIT {
 
@@ -41,10 +42,9 @@ class DistributedSessionDockerIT {
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
 
-            await().atMost(300, TimeUnit.SECONDS)
+            with().pollInterval(FibonacciPollInterval.fibonacci(SECONDS)).await().atMost(300, SECONDS)
                     .ignoreExceptions()
                     .until({
-                        Thread.sleep(5000)
                         given().get("http://localhost:80/user").then().statusCode(401)
 
                         given().get("http://localhost:80/user-service/usersInfo")
