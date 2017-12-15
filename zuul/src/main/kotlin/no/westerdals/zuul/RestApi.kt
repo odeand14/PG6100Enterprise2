@@ -2,6 +2,8 @@ package no.westerdals.zuul
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.ApiResponse
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -35,10 +37,13 @@ class RestApi(
     }
 
     @ApiOperation("Login service")
+    @ApiResponse(code = 204 or 400, message = "CSRF Token cookie or Session cookie")
     @PostMapping(path = arrayOf("/signIn"),
             consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
-    fun signIn(@ModelAttribute(name = "the_user") username: String,
-               @ModelAttribute(name = "the_password") password: String)
+    fun signIn(@ApiParam("Username")
+            @ModelAttribute(name = "the_user") username: String,
+            @ApiParam("Users password")
+            @ModelAttribute(name = "the_password") password: String)
             : ResponseEntity<Void> {
 
         val registered = service.createUser(username, password, setOf("USER"))

@@ -17,15 +17,18 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
         http.httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**")
+                .antMatchers("/friendslists/count")
+                .permitAll()
+                .antMatchers("/friendslists/**")
 //                .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
                 .hasRole("USER")
-                .antMatchers("/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html")
+                .antMatchers("/swagger-resources/configuration/security", "**/friendslist/v2/api-docs", "/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html")
                 .permitAll()
                 .anyRequest().denyAll()
                 .and()
                 .csrf().disable()
     }
+
     @Bean
     fun userSecurity() : UserSecurity {
         return UserSecurity()
