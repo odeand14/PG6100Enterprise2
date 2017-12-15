@@ -51,7 +51,7 @@ class GameIT {
                         given().get("http://localhost:80/user").then().statusCode(401)
 
                         // TODO(reek): VERY IMPORTANT SWITCH THIS WITH OURS.
-                        given().get("http://localhost:80/game/healtz")
+                        given().get("http://localhost:80/game/healthz")
                                 .then().statusCode(200)
 
 
@@ -327,7 +327,7 @@ class GameIT {
                 .extract()
                 .`as`(TestGameResponseDto::class.java)
 
-        assertEquals(pollResp4.error, "scoordinates already used")
+        assertEquals(pollResp6.error, "coordinates already used")
 
         // Player 1 now makes the original move. This process is repeated until game is over.
         postTestMove(gameId, tusr1, 0, 1)
