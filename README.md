@@ -27,7 +27,7 @@ The project is structured so that all modules are on the same level, directly be
 ### Testing and technologies
 We have mainly focused on trying to get good coverage with our tests here, also on trying modules together with end to end tests. It has been a most entertaining/frustrating/useful experience, working with microservices in docker containers, along with Zuul, Redis, Eureka, Swagger and more. We have found that it is not easy getting everything to communicate correctly especially with Zuul to consider. However, we are positively surprised by swagger. It was a most useful and powerful documentation tool which we are sure to see again.
 ### Comments
-We experienced some difficulties on the way to understanding how it all worked together, and making the modules communicate correctly with zuul as the concerned mother watching after her microservices.
+We experienced some difficulties on the way to understanding how it all worked together, and making the modules communicate correctly with zuul as the concerned mother watching after her microservices. We feel that given a little more time we would have managed this in a much better way, rather, now that we understand how(most) of the technologies work together we would have started out differently, built a better skeleton to begin with and made the necessary steps to allow for a implementation of GUI and so on. Now that we know how this is supposed to be we are much better equipped to deal with similar tasks in the future.
 
 ## Collaborators and their modules
 * **Andreas Waadeland - github: xIntern**
