@@ -17,8 +17,7 @@ import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger2.annotations.EnableSwagger2
 
-//@EnableJpaRepositories(basePackages = arrayOf("no.westerdals"))
-//@EntityScan(basePackages = arrayOf("no.westerdals"))
+
 @SpringBootApplication
 @EnableSwagger2
 class Application {

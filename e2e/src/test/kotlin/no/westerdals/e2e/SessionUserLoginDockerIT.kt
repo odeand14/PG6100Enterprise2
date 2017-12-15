@@ -146,13 +146,6 @@ class DistributedSessionDockerIT {
         val firstCookies = registerUser(firstId, "123")
         val firstPath = "/user-service/usersInfo/$firstId"
 
-        /*
-            In general, it can make sense to have the DTOs in their
-            own module, so can be reused in the client directly.
-            Otherwise, we would need to craft the JSON manually,
-            as done in these tests
-         */
-
         given().cookie("SESSION", firstCookies.session)
                 .get("/user")
                 .then()
