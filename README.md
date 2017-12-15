@@ -46,9 +46,10 @@ We have mainly focused on trying to get good coverage with our tests here, also 
 We experienced some difficulties on the way to understanding how it all worked together, and making the modules communicate correctly with zuul as the concerned mother watching after her microservices. We feel that given a little more time we would have managed this in a much better way, rather, now that we understand how(most) of the technologies work together we would have started out differently, built a better skeleton to begin with and made the necessary steps to allow for a implementation of GUI and so on. Now that we know how this is supposed to be we are much better equipped to deal with similar tasks in the future.
 
 ## Collaborators and their modules
-* **Andreas Waadeland - github: xIntern**
+* **Andreas Waadeland - github: [xIntern](https://github.com/xIntern)**
 
-Has worked on the *friendslist* module and everything related to that
+I have worked on the friendslist module and everything related to that. Some swagger, zuul and docker configuration,
+also writing on this document and overall been helping the group with building and other minor tasks where needed.
 
 * **Marius Rikheim - github: rikmar15/Mariusrik**
 
