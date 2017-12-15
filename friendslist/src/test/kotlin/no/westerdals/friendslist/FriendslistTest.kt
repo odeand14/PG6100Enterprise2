@@ -25,7 +25,7 @@ class FriendslistTest {
 
     @Before
     fun setup() {
-        RestAssured.baseURI = "http://127.0.0.1"
+        RestAssured.baseURI = "http://localhost"
         RestAssured.basePath = "/friendslist"
         RestAssured.port = port
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
@@ -34,16 +34,16 @@ class FriendslistTest {
     }
 
     @Test
-    fun testInvalidID() {
-        given().basePath("/123123")
+    fun testInvalidFriendID() {
+        given().basePath("/123123").auth().basic("admin","admin")
                 .get()
                 .then()
                 .statusCode(404)
     }
 
     @Test
-    fun testGetCount() {
-        val count = given().basePath("/friendslistCount")
+    fun testGetFriendsCount() {
+        val count = given().basePath("/friendslistCount").auth().basic("admin","admin")
                 .get()
                 .then()
                 .statusCode(200)
@@ -62,52 +62,66 @@ class FriendslistTest {
                 .body(equalTo("[]"))
     }
 
-//    private fun getFriends(n: Int){
-//        given().basePath("/friendslist").auth().basic("admin","admin")
-//                .accept(ContentType.JSON)
-//                .get()
-//                .then()
-//                .statusCode(200)
-//                .body("size()", equalTo(n))
-//    }
-//
-//    @Test
-//    fun testCreate() {
-//
-//        getFriends(0)
-//
-//        val user = "admin"
-//        val password = "admin"
-//
-//        val dto = FriendslistEntity("",1,2,"2017-12-14T20:03:12")
-//
-//        given().basePath("/friendslist/").auth().basic(user, password)
-//                .contentType(ContentType.JSON)
-//                .body(dto)
-//                .post()
-//                .then()
-//                .statusCode(201)
-//
-//        getFriends(1)
-//    }
-//
-//    @Test
-//    fun testUnAuthorizedCreate(){
-//
-////        checkSize(0)
-//
-//        val user = "un"
-//        val password = "authed"
-//
-//        val dto = FriendslistEntity(null,1,2,"2017-12-14T20:03:12")
-//
-//        given().basePath("/friendslist/").auth().basic(user, password)
-//                .contentType(ContentType.JSON)
-//                .body(dto)
-//                .post()
-//                .then()
-//                .statusCode(401)
-//
-////        checkSize(0)
-//    }
+    private fun getFriends(n: Int){
+        val response = given().basePath("/friendslist").auth().basic("admin","admin")
+                .accept(ContentType.JSON)
+                .get()
+                .then()
+                .extract()
+        val statusCode = response.statusCode()
+        val body = response.body()
+        if (statusCode == 200) {
+            assertEquals(n, arrayOf(body).size)
+        } else {
+            assertEquals(n, 0)
+        }
+    }
+
+    @Test
+    fun testUnAuthorizedFriendCreate() {
+
+        getFriends(0)
+
+        val dto = FriendslistEntity("1",1,2,"2017-12-14T20:03:12")
+
+        given().basePath("/friendslist/").auth().basic("un","authed")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .post()
+                .then()
+                .statusCode(401)
+
+        getFriends(0)
+    }
+
+    @Test
+    fun testCreateFriend() {
+
+        getFriends(0)
+
+        val dto = FriendslistEntity("",1,2,"2017-12-14T20:03:12")
+
+        given().basePath("/friendslist/").auth().basic("admin","admin")
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .post()
+                .then()
+                .statusCode(201)
+
+        getFriends(1)
+    }
+
+    @Test
+    fun testDeleteFriend() {
+
+        getFriends(1)
+
+        given().basePath("/friendslist/1").auth().basic("admin","admin")
+                .contentType(ContentType.JSON)
+                .delete()
+                .then()
+                .statusCode(401)
+
+        getFriends(0)
+    }
 }
