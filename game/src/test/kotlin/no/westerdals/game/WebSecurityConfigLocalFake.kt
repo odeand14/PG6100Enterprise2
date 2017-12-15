@@ -16,6 +16,7 @@ class WebSecurityConfigLocalFake : WebSecurityConfig() {
         auth.inMemoryAuthentication()
                 .withUser("foo").password("123").roles("USER").and()
                 .withUser("bar").password("123").roles("USER").and()
+                .withUser("candy").password("123").roles("USER").and()
                 .withUser("admin").password("admin").roles("ADMIN", "USER")
     }
 }

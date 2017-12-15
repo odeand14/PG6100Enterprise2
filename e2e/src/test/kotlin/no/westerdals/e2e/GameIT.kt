@@ -5,6 +5,8 @@ package no.westerdals.e2e
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
+import io.restassured.specification.RequestSpecification
+import no.westerdals.game.dto.GameResponseDto
 import org.awaitility.Awaitility.await
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.contains
@@ -124,6 +126,173 @@ class GameIT {
                 .body("name", equalTo(id))
                 .body("roles", contains("ROLE_USER"))
     }
+
+    @Test
+    fun testForbiddenAccess() {
+        // We test if we can access each of the endpoints.
+        given().basePath("/game/api/")
+                .get("/LOL")
+                .then()
+                .statusCode(403)
+    }
+
+    // Utility classes, to reduce boilerplate.
+    class TestGameUser(val name: String, val pwd: String, val cookies: NeededCookies)
+
+
+    private fun noXSRFReq(cookies : NeededCookies) : RequestSpecification {
+        return given().cookie("SESSION", cookies.session)
+    }
+
+    private fun XSRFReq(cookies : NeededCookies) : RequestSpecification {
+        return noXSRFReq(cookies)
+                .cookie("XSRF-TOKEN", cookies.csrf)
+                .header("X-XSRF-TOKEN", cookies.csrf)
+    }
+
+
+    private fun createTestGameRequest(usr1 : TestGameUser) : Long {
+        //making a game request
+        return XSRFReq(usr1.cookies)
+                .post("/game/api/gameRequests/user/${usr1.name}")
+                .then()
+                .statusCode(201)
+                .extract().body().asString().toLong()
+    }
+
+    private fun acceptTestGameRequest(requestId : Long, usr2 : TestGameUser) : Long {
+        //accepting the game request
+        return XSRFReq(usr2.cookies)
+                .patch("/game/api/gameRequests/${requestId}/user/${usr2.name}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+    }
+
+    private fun createTestGame(usr1 : TestGameUser, usr2 : TestGameUser) : Long {
+
+        val requestId = createTestGameRequest(usr1)
+        val gameId = acceptTestGameRequest(requestId, usr2)
+
+        return gameId
+
+    }
+
+    private fun postTestMove(gameId: Long, usr: TestGameUser, x: Long, y:Long) : GameResponseDto {
+        return XSRFReq(usr.cookies)
+                .post("/game/api/move/$gameId/$x/$y/users/$usr.name")
+                .then()
+                .statusCode(200)
+                .extract().`as`(GameResponseDto::class.java)
+    }
+
+    // This is our test game for a perfecct match, where both players know
+    // everything about the game state. This way we can test that just the
+    // logic in the applicaton works.
+    @Test
+    fun testPlayAGamePerfect() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+
+        val tusr1 = TestGameUser(usr1, pwd1, cok1)
+        val tusr2 = TestGameUser(usr2, pwd2, cok2)
+
+        val gameId = createTestGame(tusr1, tusr2)
+
+
+        //player 1 does a move
+        postTestMove(gameId, tusr1, 0, 0)
+        postTestMove(gameId, tusr2, 1, 1)
+        postTestMove(gameId, tusr1, 0, 1)
+        postTestMove(gameId, tusr2, 1, 2)
+
+        val gameResult = postTestMove(gameId, tusr1, 0, 2)
+
+        Assert.assertEquals(1, gameResult.gameStatus)
+    }
+
+    // This game rests on polling to simulate how users would play over a website.
+    @Test
+    fun testPlayAGamePoll() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+    }
+
+    // This is a messy game, where the players post in wrong order and such.
+    // it should still ultimatly work, but it will test our error system.
+    @Test
+    fun testPlayAGameMessy() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+    }
+
+    // This test attempts to reproduce as many ways as possible for one of the
+    // parties to attempt to cheat. In our enterpriiiissssseeeee app this is ofcurse
+    // not possible, but we should still make the effort to check.
+    @Test
+    fun testPlayAGameCheaty() {
+        // We will need 2 players for this.
+
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+
+
+    }
+
+    // THis is a test for a 3rd party trying to post moves,
+    // posting as someone else. This is really quite similar to the
+    // cheating example, but as this might change in the future, and
+    // this involves a 3rd party, we will try to fix it.
+    @Test
+    fun testPlayAGameTheify() {
+        // We will need 3 players for this.
+
+
+        // Brb
+        val usr1 = createUniqueId()
+        val pwd1 = "bar"
+        val cok1 = registerUser(usr1, pwd1)
+
+        val usr2 = createUniqueId()
+        val pwd2 = "soap"
+        val cok2 = registerUser(usr2,pwd2)
+
+        val usr3 = createUniqueId()
+        val pwd3 = "cry"
+        val cok3 = registerUser(usr3,pwd3)
+
+    }
+
+    // NOT OUR TESTS.
+
 
     @Test
     fun testOpenCount(){

@@ -117,6 +117,35 @@ class ApplicationTest {
     }
 
 
+
+
+
+    @Test
+    fun acceptGameRequestWithOtherUsernameTest() {
+
+        val username = "foo"
+        val username2 = "bar"
+        val username3 = "candy"
+        val password = "123"
+
+
+        //making a game request
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
+                .then()
+                .statusCode(201)
+                .extract().body().asString().toLong()
+
+        //accepting the game request
+        val id = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username3}")
+                .then()
+                .statusCode(403)
+                .extract().body().asString()
+    }
+
+
+
     @Test
     fun acceptGameRequestNoRequestTest() {
 
@@ -139,7 +168,7 @@ class ApplicationTest {
         val password = "123"
 
         val requestRes = RestAssured.given().auth().basic(username, password)
-                .post("/move/4/0/0/users/3")
+                .post("/move/4/0/0/users/$username")
                 .then()
                 .statusCode(404)
                 .extract().`as`(GameResponseDto::class.java)
@@ -170,7 +199,7 @@ class ApplicationTest {
 
 
         //player 1 does a move
-        val respons = RestAssured.given().auth().basic(username2, password)
+        val respons = RestAssured.given().auth().basic(username, password)
                 .post("/move/${gameid}/0/1/users/${username}")
                 .then()
                 .statusCode(200)
@@ -206,12 +235,42 @@ class ApplicationTest {
 
         //player 1 does a move
         val respons = RestAssured.given().auth().basic(username2, password)
-                .post("/move/${gameid}/3/4/users/${username}")
+                .post("/move/${gameid}/3/4/users/${username2}")
                 .then()
                 .statusCode(400)
                 .extract().`as`(GameResponseDto::class.java)
 
         Assert.assertEquals("coordinates out of bound",respons.error)
+    }
+
+    @Test
+    fun postMoveAsOtherPlayer() {
+
+        val username = "foo"
+        val username2 = "bar"
+        val username3 = "candy"
+        val password = "123"
+
+        //making a game request
+        val requestId = RestAssured.given().auth().basic(username, password)
+                .post("/gameRequests/user/${username}")
+                .then()
+                .statusCode(201)
+                .extract().body().asString().toLong()
+
+        //accepting the game request
+        val gameid = RestAssured.given().auth().basic(username2, password)
+                .patch("/gameRequests/${requestId}/user/${username2}")
+                .then()
+                .statusCode(200)
+                .extract().body().asString().toLong()
+
+
+        //player 3 does a move pretending to be player 2
+        val respons = RestAssured.given().auth().basic(username3, password)
+                .post("/move/${gameid}/3/3/users/${username}")
+                .then()
+                .statusCode(403)
     }
 
 
@@ -249,7 +308,7 @@ class ApplicationTest {
 
         //player 2 does a move
         val respons2 = RestAssured.given().auth().basic(username2, password)
-                .post("/move/${gameid}/1/1/users/${username}")
+                .post("/move/${gameid}/1/1/users/${username2}")
                 .then()
                 .statusCode(409)
                 .extract().`as`(GameResponseDto::class.java)

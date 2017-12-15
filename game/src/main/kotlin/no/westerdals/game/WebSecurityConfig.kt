@@ -19,9 +19,17 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
         http.httpBasic()
                 .and()
                 .authorizeRequests()
-                //
-                .antMatchers("/api/user/{id}/**")
+                // TODO(reek): This must be redone, because it doesn't match up to the current
+                // URI scheme.
+
+                .antMatchers(
+                        "/api/gameRequests/user/{id}",
+                        "/api/gameRequests/{requestId}/user/{id}",
+                        "/api/move/{gameid}/{xcoord}/{ycoord}/users/{id}"
+                )
                 .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
+
+
                 //
                 .antMatchers("/api/**").hasRole("USER")
                 //
