@@ -160,47 +160,46 @@ class HighscoreApplicationTest{
                 .statusCode(200)
                 .body("user2", equalTo(changed))
     }
-//
-//
-//
-//    @Test
-//    fun testForbiddenToChangeOthers(){
-//
-//        checkSize(0)
-//
-//        val id = 1234L
-//        val user = "admin"
-//        val password = "admin"
-//
-//        given().basePath("/highscores").auth().basic(user,password)
-//                .contentType(ContentType.JSON)
-//                .body(HighscoreEntity(id,1,3,"Jonny","Billy"))
-//                .put("/$id")
-//                .then()
-//                .statusCode(201)
-//
-//        checkSize(1)
-//
-//        val secondUser = "foo"
-//        val second = 2345L
-//
-//        given().basePath("/highscores").auth().basic(user,password)
-//                .contentType(ContentType.JSON)
-//                .body(HighscoreEntity(id,4,6,"Teo","Todd"))
-//                .put("/$second")
-//                .then()
-//                .statusCode(201)
-//
-//        checkSize(2)
-//
-//
-//        given().basePath("/highscores").auth().basic(secondUser,"123")
-//                .contentType(ContentType.JSON)
-//                .body(HighscoreEntity(second,345,34,"forbidden","forbidden"))
-//                .put("/$second")
-//                .then()
-//                .statusCode(403)
-//
-//        checkSize(2)
-//    }
+
+
+
+    @Test
+    fun testForbiddenToChangeWrongId(){
+
+        checkSize(0)
+
+        val firstId = 1234L
+        val user = "admin"
+        val password = "admin"
+
+        given().basePath("/highscores").auth().basic(user,password)
+                .contentType(ContentType.JSON)
+                .body(HighscoreEntity(firstId,1,3,"Jonny","Billy"))
+                .put("/$firstId")
+                .then()
+                .statusCode(201)
+
+        checkSize(1)
+
+        val secondId = 2345L
+
+        given().basePath("/highscores").auth().basic(user,password)
+                .contentType(ContentType.JSON)
+                .body(HighscoreEntity(secondId,4,6,"Teo","Todd"))
+                .put("/$secondId")
+                .then()
+                .statusCode(201)
+
+        checkSize(2)
+
+
+        given().basePath("/highscores").auth().basic(user,password)
+                .contentType(ContentType.JSON)
+                .body(HighscoreEntity(firstId,345,34,"forbidden","forbidden"))
+                .put("/$secondId")
+                .then()
+                .statusCode(409)
+
+        checkSize(2)
+    }
 }

@@ -32,8 +32,6 @@ class WebSecurityConfig(
                 .and()
                 //
                 .authorizeRequests()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/user").authenticated()
                 .antMatchers("/signIn").permitAll()
                 .antMatchers("/user-service/usersInfoCount").permitAll()

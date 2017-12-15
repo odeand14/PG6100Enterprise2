@@ -10,7 +10,8 @@ Instead we have focused on creating extensive end-to-end tests to simulate the d
 ### Installing
 * Clone the repo on [our GitHub page](https://github.com/odeand14/PG6100Enterprise2 "Our GitHub") or use the one provided
 * Run ```mvn install``` this command should create all the jars and run all the tests.
-*
+
+* For Swagger documentation and running application do a ```docker-compose build``` and then a
 
 ### Prerequisites
 * General knowledge about Docker and how to install this yourself

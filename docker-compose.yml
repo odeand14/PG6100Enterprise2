@@ -49,13 +49,13 @@ services:
       - redis
       - scorepostgres
 
-  friendslist:
-    build:
-      context: ./friendslist
-      dockerfile: Dockerfile
-    depends_on:
-      - redis
-      - postgres
+#  friendslist:
+#    build:
+#      context: ./friendslist
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - redis
+#      - friendslistpostgres
 
   scorepostgres:
     image: "postgres:10"
@@ -65,7 +65,9 @@ services:
 
   postgres:
     image: "postgres:10"
-
+#
+#  gamepostgres:
+#    image: "postgres:10"
 
 
 

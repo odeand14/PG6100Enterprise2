@@ -24,8 +24,8 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
                 .antMatchers("/highscoresCount").permitAll()
                 .antMatchers("/highscores/**").hasRole("USER")
                 //
-                .antMatchers("/highscores/{id}/**")
-                .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
+                .antMatchers("/highscores/{id}/**").hasRole("USER")
+//                .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
                 .antMatchers("/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html").permitAll()
                 .anyRequest().denyAll()
                 .and()

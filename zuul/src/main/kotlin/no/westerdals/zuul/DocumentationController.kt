@@ -17,10 +17,11 @@ class DocumentationController : SwaggerResourcesProvider {
 
     override fun get(): List<SwaggerResource> {
         val resources = ArrayList<SwaggerResource>()
-        resources.add(swaggerResource("user-service", "/api/user-service/v2/api-docs", "2.0"))
-        resources.add(swaggerResource("highscore-service", "/api/highscore/v2/api-docs", "2.0"))
-        resources.add(swaggerResource("game-service", "/api/game/v2/api-docs", "2.0"))
-        resources.add(swaggerResource("friendslist-service", "/api/friendslist/v2/api-docs", "2.0"))
+        resources.add(swaggerResource("gateway", "/v2/api-docs", "2.0"))
+        resources.add(swaggerResource("user-service", "/user-service/v2/api-docs", "2.0"))
+        resources.add(swaggerResource("highscore-service", "/highscore/v2/api-docs", "2.0"))
+        resources.add(swaggerResource("game-service", "/game/v2/api-docs", "2.0"))
+        resources.add(swaggerResource("friendslist-service", "/friendslist/v2/api-docs", "2.0"))
         return resources
     }
 

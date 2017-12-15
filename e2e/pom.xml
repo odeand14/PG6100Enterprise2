@@ -20,11 +20,11 @@
         </dependency>
 
         <!-- Force this module to be built last -->
-        <dependency>
-            <groupId>no.westerdals</groupId>
-            <artifactId>friendslist</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>no.westerdals</groupId>-->
+            <!--<artifactId>friendslist</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>no.westerdals</groupId>
             <artifactId>user-service</artifactId>

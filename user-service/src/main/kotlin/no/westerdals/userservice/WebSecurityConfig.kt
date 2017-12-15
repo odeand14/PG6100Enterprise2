@@ -20,20 +20,11 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
         http.httpBasic()
                 .and()
                 .authorizeRequests()
-                /*
-                     ?  matches one character
-                     *  matches zero or more characters
-                     ** matches zero or more directories in a path
-                     {foo:[a-z]+} matches the regexp [a-z]+ as a path variable named "foo"
-                 */
                 .antMatchers("/usersInfoCount").permitAll()
                 .antMatchers("/usersInfo").hasRole("ADMIN")
-                //
                 .antMatchers("/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html").permitAll()
-                //
                 .antMatchers("/usersInfo/{id}/**")
                 .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
-                //
                 .anyRequest().denyAll()
                 .and()
                 .csrf().disable()

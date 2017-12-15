@@ -16,7 +16,7 @@
         <module>zuul</module>
         <module>eureka</module>
         <module>frontend</module>
-        <module>friendslist</module>
+        <!--<module>friendslist</module>-->
         <module>game</module>
         <module>e2e</module>
     </modules>
@@ -257,16 +257,16 @@
             <plugins>
 
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                    <inherited>true</inherited>
-                    <configuration>
-                        <source>${version.java}</source>
-                        <target>${version.java}</target>
-                    </configuration>
-                </plugin>
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                    <!--<version>3.1</version>-->
+                    <!--<inherited>true</inherited>-->
+                    <!--<configuration>-->
+                        <!--<source>${version.java}</source>-->
+                        <!--<target>${version.java}</target>-->
+                    <!--</configuration>-->
+                <!--</plugin>-->
 
                 <!-- this is needed to run integration tests -->
                 <plugin>
