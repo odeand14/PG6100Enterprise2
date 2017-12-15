@@ -4,11 +4,11 @@ package no.westerdals.game
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
+import io.swagger.annotations.ApiResponse
+import no.westerdals.game.dto.GameResponseDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpSession
 
 @Api(value = "/game", description = "Handling creating game requests and playing a game")
 
@@ -19,42 +19,52 @@ class RestApi(
         private val requestcrud: GameRequestRepository
 
 ) {
-/**
+    /**
     //TODO: ONLY FOR DEBUGGING PURPOSES, REMEMBER TO REMOVE
     @GetMapping("/api/test")
     fun getTest(session: HttpSession): ResponseEntity<String> {
-        println(session.attributeNames.toList().joinToString(" "))
-        println(session.id)
+    println(session.attributeNames.toList().joinToString(" "))
+    println(session.id)
 
-        val aa = SecurityContextHolder.getContext().authentication
+    val aa = SecurityContextHolder.getContext().authentication
 
-        return ResponseEntity.ok(session.attributeNames.toList().joinToString(" "))
+    return ResponseEntity.ok(session.attributeNames.toList().joinToString(" "))
     }*/
+
+    @ApiOperation("A health check")
+    @GetMapping("/healthz")
+    @ApiResponse(code = 200, message = "The literal string '<3'")
+    fun getHealthz() : ResponseEntity<String> {
+        return ResponseEntity.ok("<3")
+    }
 
 
     @ApiOperation("Gets a game request by id")
     @GetMapping("/api/gameRequests/{id}")
+    @ApiResponse(code = 200, message = "A game request with id specified")
     fun getGameRequest(
-        @ApiParam("Gamerequest id")
-        @PathVariable id: Long): ResponseEntity<GameRequestEntity> {
+            @ApiParam("Gamerequest id")
+            @PathVariable id: Long): ResponseEntity<GameRequestEntity> {
         return ResponseEntity.ok(requestcrud.findOneById(id))
     }
 
 
     @ApiOperation("Creates a game request that can be joined by the id returned")
     @PostMapping("/api/gameRequests/user/{playerid}")
+    @ApiResponse(code = 201, message = "The id of the new game request")
     fun createGameRequest(
             @ApiParam("Id of the player making the gamerequest")
             @PathVariable playerid: String): ResponseEntity<Long> {
         //  val aa = SecurityContextHolder.getContext().authentication
         val reQuestid = requestcrud.createRequest(playerid)
 
-        return ResponseEntity.ok(reQuestid)
+        return ResponseEntity.status(201).body(reQuestid)
     }
 
 
-    @ApiOperation("Patches a game request by requestid and player2id so that a game can be created")
+    @ApiOperation("Patches a game request by requestid and player2id, adding player2 to the request so that a game can be created")
     @PatchMapping("/api/gameRequests/{reqid}/user/{playerid}")
+    @ApiResponse(code = 200, message = "The id of the new game")
     fun acceptGameRequest(
             @ApiParam("Id of the player accepting the gamerequest.")
             @PathVariable playerid: String,
@@ -72,13 +82,17 @@ class RestApi(
 
         println("##########" + requestEntity.player1username + requestEntity.player2username)
 
-        val valium = gamecrud.createGame(requestEntity.player1username, requestEntity.player2username!!)
-        return ResponseEntity.ok(valium)
+        val gameId = gamecrud.createGame(requestEntity.player1username, requestEntity.player2username!!)
+        foundRequest.gameId = gameId
+        requestcrud.save(foundRequest)
+
+        return ResponseEntity.ok(gameId)
     }
 
     @ApiOperation("Gets a game by id")
     @GetMapping("/api/games/{id}")
-    fun getGamess(
+    @ApiResponse(code = 200, message = "A game with the specified id")
+    fun getGames(
             @ApiParam("Id of the game you want")
             @PathVariable id: Long): ResponseEntity<GameEntity> {
 
@@ -89,6 +103,7 @@ class RestApi(
     @ApiOperation("Posts a move on the gameboard by gameid x and y coordinates, and userid")
     @PostMapping("/api/move/{gameid}/{xcoord}/{ycoord}/users/{playerusername}",
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+    @ApiResponse(code = 200, message = "GameResponseDto")
     fun postMove(
             @ApiParam("Username of the user posting a game move")
             @PathVariable playerusername: String,
@@ -100,44 +115,46 @@ class RestApi(
             @PathVariable xcoord: Int,
 
             @ApiParam("Y coordinate on the")
-            @PathVariable ycoord: Int): ResponseEntity<Map<String, String>> {
+            @PathVariable ycoord: Int): ResponseEntity<GameResponseDto> {
 
         // val playerusername = playerid
 
 
         if (0 > xcoord || xcoord > 2 || ycoord > 2 || ycoord < 0) {
-            return ResponseEntity.badRequest().body(hashMapOf("error" to "coordinates out of bound", "moveID" to "", "gameStatus" to "0"))
+            return ResponseEntity.badRequest().body(GameResponseDto("coordinates out of bound", 0))
         }
 
-        val foundGame = gamecrud.findOneByGameId(gameid) ?: return ResponseEntity.status(404).body(hashMapOf("error" to "NO GAME FOUND", "moveID" to "", "gameStatus" to "0"))
+        val foundGame = gamecrud.findOneByGameId(gameid) ?: return ResponseEntity.status(404).body(GameResponseDto("Game not found", 0))
 
         if (foundGame.gameDone != 0) {
-            return ResponseEntity.status(406).body(hashMapOf("error" to "GAME IS FINISHED", "moveID" to ""))
+            return ResponseEntity.status(406).body(GameResponseDto("Game is finished", foundGame.gameDone.toLong()))
         }
 
         val movelist = foundGame.gameMoves
         if (movelist == null || movelist.size <= 0) {
             if (playerusername != foundGame.player1username) {
-                return ResponseEntity.badRequest().body(hashMapOf("error" to "PLAYER 1 MUST MAKE THE FIRST MOVE", "moveID" to "", "gameStatus" to "0"))
+                return ResponseEntity.badRequest().body(GameResponseDto("Player 1 must make the first move", 0))
             }
             val moveId = movescrud.createMove(gameid, playerusername, xcoord, ycoord)
 
-            println(foundGame.gameMoves)
-            return ResponseEntity.ok(hashMapOf("error" to "NONE", "moveID" to "${moveId}", "gameStatus" to "0"))
+            //println(foundGame.gameMoves)
+            return ResponseEntity.ok(GameResponseDto("", 0))
         }
+
+        val lastPlayerId = movelist.last().playerusername
+        if (playerusername == lastPlayerId) {
+            return ResponseEntity.status(409).body(GameResponseDto("same user cant post twice", 0))
+        }
+
 
         //TODO: bad perf
         for (entity in movelist) {
             if ((entity.x == xcoord) && (entity.y == ycoord)) {
-                return ResponseEntity.status(409).body(hashMapOf("error" to "Coordinate already placed", "moveID" to "", "gameStatus" to "0"))
+                return ResponseEntity.status(409).body(GameResponseDto("coordinates already used", 0))
             }
         }
 
 
-        val lastPlayerId = movelist.last().playerusername
-        if (playerusername == lastPlayerId) {
-            return ResponseEntity.status(409).build()
-        }
 
 
         val moveId = movescrud.createMove(gameid, playerusername, xcoord, ycoord)
@@ -148,22 +165,22 @@ class RestApi(
         val winner: Long
         if (movelist.size >= 9 && !gameWon) {
             gamecrud.changeGameStatus(gameid, 3)
-            return ResponseEntity.ok(hashMapOf("error" to "NONE", "moveID" to "${moveId}", "gameStatus" to "3"))
+            return ResponseEntity.ok(GameResponseDto("", 3))
         }
         if (gameWon) {
             if (playerusername == foundGame.player1username) {
                 gamecrud.changeGameStatus(gameid, 1)
-                return ResponseEntity.ok(hashMapOf("error" to "NONE", "moveID" to "${moveId}", "gameStatus" to "1"))
+                return ResponseEntity.ok(GameResponseDto("", 1))
             } else {
                 gamecrud.changeGameStatus(gameid, 2)
-                return ResponseEntity.ok(hashMapOf("error" to "NONE", "moveID" to "${moveId}", "gameStatus" to "2"))
+                return ResponseEntity.ok(GameResponseDto("", 2))
 
             }
         }
 
 
         //movescrud.findOne(moveId)
-        return ResponseEntity.ok(hashMapOf("error" to "NONE", "moveID" to "${moveId}", "gameStatus" to "0"))
+        return ResponseEntity.ok(GameResponseDto("", 0))
 
     }
 
@@ -193,8 +210,6 @@ class RestApi(
 
         return gameBoard.isGameWon2(board)
     }
-
-
 
 
 }
