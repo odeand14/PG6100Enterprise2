@@ -316,7 +316,7 @@ class ApplicationTest {
     }
 
 
-    //plays the hole game
+    //plays the whole game
     @Test
     fun player2winGameTest() {
         val username = "foo"
