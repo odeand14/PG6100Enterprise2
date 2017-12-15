@@ -26,25 +26,24 @@ class FriendslistTest {
 
     @Before
     fun setup() {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.basePath = "/friendslist"
+        RestAssured.baseURI = "http://127.0.0.1"
         RestAssured.port = port
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
 
         crud.deleteAll()
     }
 
-    private fun countFriends(): Int {
-        return given().basePath("/friendslistCount").auth().basic("admin","admin")
+    private fun countFriends(): Long {
+        return given().basePath("/friendslists/count").auth().basic("admin","admin")
                 .get()
                 .then()
                 .statusCode(200)
-                .extract().body().asString().toInt()
+                .extract().body().asString().toLong()
     }
 
     @Test
     fun testUnauthedRequest() {
-        given().basePath("/")
+        given().basePath("/friendslists")
                 .get()
                 .then()
                 .statusCode(401)
@@ -59,7 +58,7 @@ class FriendslistTest {
 
     @Test
     fun testGetAllFriends() {
-        given().basePath("").auth().basic("admin","admin")
+        given().basePath("/friendslists").auth().basic("admin","admin")
                 .accept(ContentType.JSON)
                 .get()
                 .then()
@@ -70,7 +69,7 @@ class FriendslistTest {
     private fun createDummyFriend(user: String, pass: String): Array<Int?> {
         val dto = FriendslistEntity(null,1,2,"2017-12-14T20:03:12")
 
-        val response = given().basePath("").auth().basic(user, pass)
+        val response = given().basePath("/friendslists").auth().basic(user, pass)
                 .contentType(ContentType.JSON)
                 .body(dto)
                 .post()
@@ -105,7 +104,7 @@ class FriendslistTest {
         val friendId = createDummyFriend("admin", "admin")[1]
         val friendsBeforeDelete = countFriends()
 
-        given().basePath("/${friendId}").auth().basic("admin","admin")
+        given().basePath("/friendslists/${friendId}").auth().basic("admin","admin")
                 .contentType(ContentType.JSON)
                 .delete()
                 .then()

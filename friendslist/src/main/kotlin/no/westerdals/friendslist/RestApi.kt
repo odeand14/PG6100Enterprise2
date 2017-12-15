@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @Repository
 interface FriendslistRepository : CrudRepository<FriendslistEntity, String>
 
-@Api(value = "/friendslist", description = "Interaction with friendslist")
+@Api(value = "/friendslists", description = "Interaction with friendslist")
 
 @RestController
 class RestApi(
@@ -20,7 +20,7 @@ class RestApi(
 
     @ApiOperation("Get all friends")
     @ApiResponse(code = 200, message = "List with Friendslist objects")
-    @GetMapping(path = arrayOf("/"),
+    @GetMapping(path = arrayOf("/friendslists"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getAllFriends(): ResponseEntity<List<FriendslistEntity>> {
 
@@ -29,7 +29,7 @@ class RestApi(
 
     @ApiOperation("Get number of friends in friendslist")
     @ApiResponse(code = 200, message = "Number of Friendslist objects")
-    @GetMapping(path = arrayOf("/friendslistCount"),
+    @GetMapping(path = arrayOf("/friendslists/count"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getAllFriendsCount(): ResponseEntity<Long> {
         return ResponseEntity.ok(crud.count())
@@ -37,7 +37,7 @@ class RestApi(
 
     @ApiOperation("Get a single friend")
     @ApiResponse(code = 200 or 404, message = "A Friendslist object")
-    @GetMapping(path = arrayOf("/{friendId}"),
+    @GetMapping(path = arrayOf("/friendslists/{friendId}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getOneFriend(@ApiParam("Id of a friend")
             @PathVariable friendId: Long): ResponseEntity<FriendslistEntity>? {
@@ -50,7 +50,7 @@ class RestApi(
 
     @ApiOperation("Add a friend")
     @ApiResponse(code = 200, message = "The created Friendslist object")
-    @PostMapping(path = arrayOf("/"),
+    @PostMapping(path = arrayOf("/friendslists"),
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun addFriend(@ApiParam("User id and friend id")
@@ -71,7 +71,7 @@ class RestApi(
 
     @ApiOperation("Remove a friend")
     @ApiResponse(code = 204 or 404, message = "No content")
-    @DeleteMapping(path = arrayOf("/{friendId}"),
+    @DeleteMapping(path = arrayOf("/friendslists/{friendId}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun removeFriend(@ApiParam("Id of a friend")
             @PathVariable friendId: Int): ResponseEntity<Void> {
