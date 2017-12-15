@@ -1,18 +1,23 @@
 package no.westerdals.highscore
 
-// Created by Andreas Ødegaard on 09.12.2017.
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.ApiResponse
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
-
+@Api(value = "/highscores", description = "Handling of creating, editing, deletion and retrieving of highscores")
 @RestController
+@Validated
 class RestApi(
         private val highscoreCrud: HighscoreEntityRepository
 ) {
-
+    @ApiOperation("Get the number of highscores")
     @GetMapping(path = arrayOf("/highscoresCount"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getCount(): ResponseEntity<Long> {
@@ -20,7 +25,7 @@ class RestApi(
         return ResponseEntity.ok(highscoreCrud.count())
     }
 
-
+    @ApiOperation("Get all highscores in the database")
     @GetMapping(path = arrayOf("/highscores"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
     fun getAll(): ResponseEntity<List<HighscoreEntity>> {
@@ -28,10 +33,11 @@ class RestApi(
         return ResponseEntity.ok(highscoreCrud.findAll().toList())
     }
 
-
+    @ApiOperation("Get highscore by ID")
     @GetMapping(path = arrayOf("/highscores/{id}"),
             produces = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun getById(@PathVariable id: Long)
+    fun getById(@ApiParam("The highscore id")
+            @PathVariable id: Long)
             : ResponseEntity<HighscoreEntity> {
 
         val entity = highscoreCrud.findOneById(id)
@@ -41,10 +47,11 @@ class RestApi(
     }
 
 
-
+    @ApiOperation("Puts values in given highscore, if nonexistent creates a new highscore")
     @PutMapping(path = arrayOf("/highscores/{id}"),
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun replace(
+    @ApiResponse(code = 204 or 201, message = "The newly altered or created highscore")
+    fun replace(@ApiParam("The highscore that will replace the old one. Cannot change its id though.")
             @PathVariable id: Long,
             @RequestBody dto: HighscoreEntity)
             : ResponseEntity<HighscoreEntity> {
@@ -65,16 +72,16 @@ class RestApi(
         return ResponseEntity.status(code).build()
     }
 
-
+    @ApiOperation("Deletes a highscore based on ID")
     @DeleteMapping(path = arrayOf("/highscores/{id}"),
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-    fun delete(
+    @ApiResponse(code = 200, message = "The id of deleted highscore")
+    fun delete(@ApiParam("The highscore id")
             @PathVariable id: Long)
             : ResponseEntity<Long> {
 
 
-        val alreadyExists = highscoreCrud.existsHighscore(id)
-        var code = if(alreadyExists) 204 else 200
+        var code = 200
 
         try {
             return ResponseEntity.status(code).body(highscoreCrud.deleteHighscore(id))
@@ -85,10 +92,12 @@ class RestApi(
         return ResponseEntity.status(code).build()
     }
 
-
+    @ApiOperation("Posts a new highscore")
     @PostMapping(path = arrayOf("/highscores"),
             consumes = arrayOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+    @ApiResponse(code = 201, message = "The id of created highscore")
     fun post(
+            @ApiParam("Name of the two players, plus their respective scores. Should not specify id")
             @RequestBody body: String)
             : ResponseEntity<Long> {
 

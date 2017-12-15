@@ -14,8 +14,7 @@ Instead we have focused on creating extensive end-to-end tests to simulate the d
 
 ### Prerequisites
 * General knowledge about Docker and how to install this yourself
-* System dependencies
-None, beside Docker dependencies
+* System dependencies, none beside Docker dependencies
 
 
 ## Project report

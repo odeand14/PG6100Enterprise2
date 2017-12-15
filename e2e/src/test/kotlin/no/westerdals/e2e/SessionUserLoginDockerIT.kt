@@ -44,7 +44,7 @@ class DistributedSessionDockerIT {
             await().atMost(300, TimeUnit.SECONDS)
                     .ignoreExceptions()
                     .until({
-
+                        Thread.sleep(5000)
                         given().get("http://localhost:80/user").then().statusCode(401)
 
                         given().get("http://localhost:80/user-service/usersInfo")

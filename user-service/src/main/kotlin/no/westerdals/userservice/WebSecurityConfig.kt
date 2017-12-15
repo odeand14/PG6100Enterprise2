@@ -29,11 +29,9 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
                 .antMatchers("/usersInfoCount").permitAll()
                 .antMatchers("/usersInfo").hasRole("ADMIN")
                 //
+                .antMatchers("/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html").permitAll()
+                //
                 .antMatchers("/usersInfo/{id}/**")
-                /*
-                    the "#" resolves the variable in the path, "{id}" in this case.
-                    the "@" resolves a current bean.
-                  */
                 .access("hasRole('USER') and @userSecurity.checkId(authentication, #id)")
                 //
                 .anyRequest().denyAll()

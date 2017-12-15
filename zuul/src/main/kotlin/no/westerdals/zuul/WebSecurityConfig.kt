@@ -32,6 +32,8 @@ class WebSecurityConfig(
                 .and()
                 //
                 .authorizeRequests()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/user").authenticated()
                 .antMatchers("/signIn").permitAll()
                 .antMatchers("/user-service/usersInfoCount").permitAll()
@@ -40,6 +42,7 @@ class WebSecurityConfig(
                 .antMatchers("/frontend/**").permitAll()
                 .antMatchers("/game/**").permitAll()
                 .antMatchers("/friendslist/**").permitAll()
+                .antMatchers("/api/**/v2/api-docs","webjars/springfox-swagger-ui/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagge‌​r-ui.html").permitAll()
                 .anyRequest().denyAll()
                 .and()
                 /*
